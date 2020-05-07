@@ -11,11 +11,12 @@ import java.util.List;
 
 
 /**
+ * Camera object that is used as a reference for rendering
  * 
  * When all angles are 0, camera points directly up and top vector points to the -y axis
  * BUt for some reason, when doing unadjusted 3d math, top vetctor seems to point in -x direction
  * 
- * @author user
+ * @author Vadim
  *
  */
 public class Camera {

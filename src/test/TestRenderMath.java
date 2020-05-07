@@ -6,6 +6,11 @@ import engine.Coordinate;
 import org.junit.Test;
 import org.junit.Assert;
 
+/**
+ * Test class to validate that Calculator class is accurate
+ * @author user
+ *
+ */
 public class TestRenderMath {
 	
 	private static final double ERROR_RANGE = 0.001;

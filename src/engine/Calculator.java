@@ -3,11 +3,12 @@ package engine;
 
 /**
  * 
+ * Utility class that handles graphics calculations. Used 3x3 Matrix multiplication to "rotate" polygons relative 
+ * to a point.
+ * 
  * Currently using right hand coordinate system
  * 
- * 
- * 
- * @author user
+ * @author Vadim
  *
  */
 public class Calculator {

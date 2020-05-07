@@ -1,8 +1,6 @@
 package engine;
 import java.awt.Color;
-import java.awt.Dimension;
 import java.awt.Graphics;
-import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.List;
@@ -13,16 +11,17 @@ import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JSlider;
-import javax.swing.border.Border;
 import javax.swing.border.EmptyBorder;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
+/**
+ * Side GUI object for controlling the cameras. Work in progress to manage the polygons and drawing polygons
+ * @author user
+ *
+ */
 public class SideGUI extends JPanel {
 
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = 1L;
 	
 	private Polygon selectedPolygon = null;
@@ -37,11 +36,13 @@ public class SideGUI extends JPanel {
 	private JButton switchB = new JButton("View");
 	private JButton forward = new JButton("Move Forward");
 	
-	
-	
 	private boolean drawing;
 	
-
+	/**
+	 * Constructor to build the GUI with the camera angle sliders, and camera select drop down. Components
+	 * are set to non-focusable the cameras can still be moved with the keys when the components are clicked
+	 * @param handler The application Graphics object
+	 */
 	public SideGUI(Handler handler) {
 		List<Camera> cams = handler.getScreen().getCameras();
 		setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
@@ -49,7 +50,6 @@ public class SideGUI extends JPanel {
 		add(switchB);
 		switchB.setFocusable(false);
 		switchB.addActionListener(new ActionListener() {
-			
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
 				Camera cam = (Camera) testdrop2.getSelectedItem();
@@ -74,7 +74,6 @@ public class SideGUI extends JPanel {
 		
 		forward.setFocusable(false);
 		
-		
 		for (int i = 0; i < cams.size(); i++) {
 			testdrop2.addItem(cams.get(i));
 		}
@@ -90,7 +89,6 @@ public class SideGUI extends JPanel {
 			}
 		});
 		
-	
 		angleSlider1.setMinimum(0);
 		angleSlider1.setMaximum(360);
 		angleSlider1.setBorder(new EmptyBorder(50, 0, 0, 0));
@@ -140,6 +138,12 @@ public class SideGUI extends JPanel {
 		angleSlider3.setFocusable(false);
 	}
 
+	/**
+	 * Work in progress, not being used. in progress for rendering information when user is drawing polygons
+	 * @param g The Application Graphics object
+	 * @param x Top Left Coordinate
+	 * @param y Top Right Coordinate
+	 */
 	public void render(Graphics g, int x, int y) {
 		g.setColor(Color.gray);
 		g.fillRect(x, y, 256, 640);		
@@ -150,17 +154,22 @@ public class SideGUI extends JPanel {
 		
 		if (clickSelected!= null) {
 			Color color = clickSelected.getColor();
-			g.drawString("Color: [" + color.getRed() + ", " + color.getGreen() + ", " + color.getBlue() + "]", x + 16, y + 32);
+			g.drawString("Color: [" + color.getRed() + ", " + color.getGreen() + ", " 
+					+ color.getBlue() + "]", x + 16, y + 32);
 			for (int i = 0; i < clickSelected.getCoords().size(); i++) {
 				Coordinate coord = clickSelected.getCoords().get(i);
-				g.drawString(i + ") " + coord.getX() + ", " + coord.getY() + ", " + coord.getZ(), x + 16, y + 48 + 16*i);
+				g.drawString(i + ") " + coord.getX() + ", " + coord.getY() 
+					+ ", " + coord.getZ(), x + 16, y + 48 + 16*i);
 			}
 		}
 	
 		System.out.println(angleSlider2.getValue());
 	}
 
-	public void tick () {
+	/**
+	 * Updated the sliders based on the selected camera
+	 */
+	public void tick() {
 		Camera cam = (Camera) testdrop2.getSelectedItem();
 		angleSlider1.setValue((int)cam.getXYAngle());
 		angleSlider2.setValue((int)cam.getZYAngle());
@@ -172,6 +181,8 @@ public class SideGUI extends JPanel {
 			clickSelected = selectedPolygon;
 		}
 	}
+	
+	//Getters and Setter------------------------------------------------------------------------------------------------
 	
 	public void setSelected(Polygon selected) {
 		selectedPolygon = selected;
@@ -192,5 +203,7 @@ public class SideGUI extends JPanel {
 	public boolean isDrawing() {
 		return drawing;
 	}
+	
+	//End of Getters and Setters----------------------------------------------------------------------------------------
 
 }

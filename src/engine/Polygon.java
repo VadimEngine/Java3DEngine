@@ -2,12 +2,16 @@ package engine;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
-import java.awt.RenderingHints;
 import java.awt.geom.Path2D;
 import java.awt.geom.Point2D;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * A polygon that build by 3 or more coordinates and can be rendered.
+ * @author Vadim
+ *
+ */
 public class Polygon {
 		
 	private List<Coordinate> coords = new ArrayList<>();
@@ -16,6 +20,12 @@ public class Polygon {
 	private int testX = 0;//used as a test way to move shape
 	private boolean testMove;
 	
+	/**
+	 * Constructor that sets the color and polygon vertices 
+	 * 
+	 * @param color The color of the polygon
+	 * @param coords Vertexes of the polygon
+	 */
 	public Polygon(Color color, List<Coordinate> coords) {
 		this.color = color;
 		for (int i = 0; i < coords.size(); i++) {
@@ -23,6 +33,12 @@ public class Polygon {
 		}
 	}
 	
+	/**
+	 * Constructor that sets the color and polygon vertices 
+	 * 
+	 * @param color The color of the polygon
+	 * @param coords Vertexes of the polygon
+	 */
 	public Polygon(Color color, Coordinate... coord) {//check for empty input
 		this.color = color;
 		for (int i = 0; i < coord.length; i++) {
@@ -30,6 +46,13 @@ public class Polygon {
 		}
 	}
 	
+	/**
+	 * Constructor that sets the color and polygon vertices 
+	 * 
+	 * @param color The color of the polygon
+	 * @param move If the polgon moves
+	 * @param coords Vertexes of the polygon
+	 */
 	public Polygon(Color color, boolean move, Coordinate... coord) {//check for empty input
 		this.color = color;
 		testMove = move;
@@ -38,22 +61,49 @@ public class Polygon {
 		}
 	}
 	
+	/**
+	 * Rectangle polygon with Red Color
+	 * 
+	 * @param x Top left x coordinate
+	 * @param y Top left y coordinate
+	 * @param z Top left z coordinate
+	 * @param width width of rectangle
+	 * @param height radius of rectangle
+	 */
 	public Polygon(int x, int y, int z, int width, int height) {
 		this(Color.RED, new Coordinate(x,y, z), new Coordinate(x + width, y, z),
 				new Coordinate(x + width, y + height, z), new Coordinate(x, y + height, z));
 	}
 	
+	/**
+	 * Rectangle polygon
+	 * 
+	 * @param x Top left x coordinate
+	 * @param y Top left y coordinate
+	 * @param z Top left z coordinate
+	 * @param width width of rectangle
+	 * @param height radius of rectangle
+	 * @param color Color of polygon
+	 */
 	public Polygon(int x, int y, int z, int width, int height, Color color) {
 		this(color, new Coordinate(x,y, z), new Coordinate(x + width, y, z),
 				new Coordinate(x + width, y + height, z), new Coordinate(x, y + height, z));
 	}
 
+	/**
+	 * Moves the polygon if it is enabled
+	 */
 	public void tick() {
 		if (testMove) {			
 			testX = (testX + 1) % 100;
 		}
 	}
 
+	/**
+	 * Renders the polygon relative to the Camera that is viewing
+	 * @param g the Application Graphics object
+	 * @param c The Viewing Camera
+	 */
 	public void render(Graphics g, Camera c) {
 		boolean oneInbound = false;
 		Coordinate coords = this.coords.get(0);
@@ -87,6 +137,11 @@ public class Polygon {
 
 	}
 	
+	/**
+	 * Renders the polygon relative to the Camera that is viewing with a set color
+	 * @param g the Application Graphics object
+	 * @param c The Viewing Camera
+	 */
 	public void render(Graphics g, Camera c, Color color) {
 		Coordinate coords = this.coords.get(0);
 		Coordinate rot = Calculator.rotateAroundCamera(coords, c);
@@ -108,6 +163,11 @@ public class Polygon {
 		((Graphics2D) g).draw(shape);
 	}
 	
+	/**
+	 * Renders the polygon relative to the Camera that is viewing with a boarder
+	 * @param g the Application Graphics object
+	 * @param c The Viewing Camera
+	 */
 	public void render(Graphics g, Camera c, boolean line) {
 		Coordinate coords = this.coords.get(0);
 		Coordinate rot = Calculator.rotateAroundCamera(coords, c);
@@ -125,10 +185,12 @@ public class Polygon {
 		}
 		g.setColor(color);
 		((Graphics2D) g).fill(shape);
-		//g.setColor(Color.BLACK);
-		//((Graphics2D) g).draw(shape);
+		if (line) {
+			g.setColor(Color.BLACK);
+			((Graphics2D) g).draw(shape);
+		}
+
 	}
-	
 	
 	/**
 	 * Used in a quick method to order the polygons by distance to camera so the closest ones get drawn last
@@ -152,10 +214,11 @@ public class Polygon {
 	}
 	
 	/**
-	 *
-	 * @param x
-	 * @param y
-	 * @param c
+	 * Returns if the a 2d coordinate is within the polygon based on the Camera view
+	 * 
+	 * @param x The 2d X coordinate
+	 * @param y The 2d Y coordinate
+	 * @param c The Camera that is viewing
 	 * @return
 	 */
 	public boolean coordInside(int x, int y, Camera c) {
@@ -174,6 +237,8 @@ public class Polygon {
 		return shape.contains(new Point2D.Double(x,y));
 	}
 	
+	//Getters and Setters-----------------------------------------------------------------------------------------------
+	
 	public void setColor(Color color) {
 		this.color = color;
 	}
@@ -186,4 +251,5 @@ public class Polygon {
 		return color;
 	}
 
+	//End of Getters and Setters----------------------------------------------------------------------------------------
 }

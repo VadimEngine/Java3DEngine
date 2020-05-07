@@ -7,6 +7,11 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
+/**
+ * A test Sphere shape build with N sides
+ * @author Vadim
+ *
+ */
 public class TestShape {
 	
 	private double xyAngle;

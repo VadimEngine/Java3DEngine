@@ -1,14 +1,17 @@
 package engine;
 import java.awt.Color;
 import java.awt.Graphics;
-import java.awt.Graphics2D;
 import java.awt.event.MouseEvent;
-import java.awt.geom.Path2D;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
+/**
+ * Screen class that handles rendering all renderable objects
+ * @author user
+ *
+ */
 public class Screen {
 
 	private Handler handler;
@@ -19,10 +22,13 @@ public class Screen {
 	private Polygon ghost = null;
 	
 	private TestShape testshape = new TestShape(new Coordinate(0, 0, 10), 6, 20, 0, 0, 0);
-	
 	private Polygon selected = null;
 	
 
+	/**
+	 * Constructor that initializes cameras and populates all the polygons to render.
+	 * @param handler The handler that holds this Screen
+	 */
 	public Screen(Handler handler) {
 		this.handler = handler;
 		populateShapes();
@@ -30,6 +36,12 @@ public class Screen {
 		cameras.add(new Camera(500,500,500));
 	}
 
+	/**
+	 * Sorts the polygons by their distance to the so the closest polygon get rendered last on top of the further
+	 * polygons and then renders all renderable objects
+	 *  
+	 * @param g The application rendering object
+	 */
 	public void render(Graphics g) {	
 		if (ghost != null) {
 			ghost.render(g, camera);
@@ -55,25 +67,13 @@ public class Screen {
 			}
 		});
 
-		for (int i = 0; i < polys.size(); i++) {			
-			//if (polys.get(i) == side.getSelected()) {
-				//polys.get(i).render(g, camera, Color.YELLOW);
-			//} else {
-			
+		for (int i = 0; i < polys.size(); i++) {						
 			if (polys.get(i) == selected) {
 				polys.get(i).render(g, camera, Color.YELLOW);
 			} else {
 				polys.get(i).render(g, camera);
 			}
-				
-				
-				//}
-
-			//if (polys.get(i) == side.getClickSelected()) {
-			//	polys.get(i).render(g, camera, Color.BLUE);
-			//}
 		}
-		//camera.render(g, camera);
 		
 		for (int i = 0; i < cameras.size(); i++) {
 			if (camera != cameras.get(i)) {
@@ -85,26 +85,38 @@ public class Screen {
 		}
 		
 		axis.render(g, camera);
-		//side.render(g, 640, 0);
-		
 		drawOnZZero(g);
-		
 		testshape.render(g, camera);
-
-		//renderCircle(0,0, 100,
-			//		100, 20, g);
+		renderCylinder(100,100, 0, 10,
+				100, 100, g);				
+	}
+	
+	/**
+	 * Updates cameras and shapes by calling their tick method, also sets the selected polygon based on mouse position
+	 */
+	public void tick() {			
+		for (int i = 0; i < cameras.size(); i++) {
+			cameras.get(i).tick(handler, cameras.get(i) == camera);
+		}
 		
-		renderCylinder(0,0, 0, 10,
-				100, 100, g);
-				
-		//new TempImage().render(g);		
+		for (int i = 0; i < shapes.size(); i++) {
+			shapes.get(i).tick();
+		}
+		
+		selectPoly(handler.mouseX, handler.mouseY);
+		testshape.tick();
 	}
 
-	// Draws a rectagnle at the same x, y of the screen but at z=0, works pretty well only if camera moves and
-	// only XY angles chagnes, but readjusting the moust once the other angles change keeps the shape drawn
-	// at the same location on screen, Need to take the other angles more into account.
-	//Also need to rorate the other angles so the shaoe is always drawn parallel/perpendicular to the camera direction
-	private void drawOnZZero(Graphics g) {//does near need to be taken into account?
+	/** 
+	 * Draws a rectangle at the same x, y of the screen but at z=0, works pretty well only if camera moves and
+	 * only XY angles changes, but re-adjusting the mouse once the other angles change keeps the shape drawn
+	 * at the same location on screen, Need to take the other angles more into account.
+	 * Also need to rotate the other angles so the shape is always drawn parallel/perpendicular to the camera direction
+	 * //does near need to be taken into account?
+	 * 
+	 * @param g The Application Grapics object
+	 */
+	private void drawOnZZero(Graphics g) {
 		int width = 10;
 		int height = 10;
 		double component[] = camera.getUnitComponent();
@@ -120,31 +132,13 @@ public class Screen {
 		test.render(g, camera);
 	}
 
-	public void tick() {	
-		
-		//camera.tick(handler);
-		
-		for (int i = 0; i < cameras.size(); i++) {
-			cameras.get(i).tick(handler, cameras.get(i) == camera);
-		}
-		
-		
-		for (int i = 0; i < shapes.size(); i++) {
-			shapes.get(i).tick();
-		}
-		
-		selectPoly(handler.mouseX, handler.mouseY);
-		testshape.tick();
-		
-//		if (handler.keys[KeyEvent.VK_ESCAPE]) {
-//			side.setDraw(!side.isDrawing());
-//		}
-	}
+
 
 	/**
-	 * Sometimes works weird because of the simple sorting technique
-	 * @param x
-	 * @param y
+	 * Sets the polygon that the mouse is over based on the mouse position. Sometimes works weird because of the
+	 * simple sorting technique
+	 * @param x The mouse x position
+	 * @param y The mouse y Postiion
 	 */
 	public void selectPoly(int x, int y) {
 		List<Polygon> polys = new ArrayList<>();//Only do this if camera moves or poly list changes
@@ -169,61 +163,45 @@ public class Screen {
 
 		for (int i = polys.size() - 1; i >= 0; i--) {
 			if (polys.get(i).coordInside(x, y, camera)) {
-				//side.setSelected(polys.get(i));
 				selected = polys.get(i);
-				//System.out.println("Selected: " + x + ", " + y  + ": "+ selected.getCoords().toString());
 				return;
 			}
 		}
 		selected = null;		
 	}
 
-	public void moveCamera(double angle) {
-		camera.move(angle);
-	}
-
-	public void scollCamera(double dir) {
-		camera.scrollCamera(dir);
-	}
-
-	public void rotateCamera(double xdir, double ydir) {
-		camera.rotateCamera(xdir, ydir);
-	}
-
-	public void click(int x, int y, MouseEvent e) {
-//		if (!side.isDrawing() && SwingUtilities.isLeftMouseButton(e)) {
-//			side.click(x, y);			
-//		}
-	}
-
-	public List<Camera> getCameras() {
-		return cameras;
-	}
-	
-	public void setCamera(Camera cam) {
-		this.camera = cam;
-	}
-	
-	
+	/**
+	 * Temporary circle rendering Method
+	 * @param x The x coordinate of the center
+	 * @param y The y coordinate of the center
+	 * @param z The z coordinate of the center
+	 * @param rad The Radius of the circle
+	 * @param n The number of edges on the circle, more means more smooth
+	 * @param g The Application graphics object
+	 */
 	private void renderCircle(double x, double y, double z, double rad , double n, Graphics g) {
-		//Temp render Circle method
-		//x = 0;
-		//y = 0;
 		List<Coordinate> tempCords = new ArrayList<>();
 		
 		for (Integer i = 0; i < n; i++) {
-			
 			double x2 = x + Math.cos((2 * Math.PI / n) * (float)i) * rad;
 			double y2 = y + Math.sin((2 * Math.PI / (float)n) * (float)i) * rad;
 			tempCords.add(new Coordinate(x2, y2, z));
 		}
 		
 		Polygon pp = new Polygon(Color.GREEN, tempCords);
-		
 		pp.render(g, camera);
 	}
 	
-	//take in a color
+	/**
+	 * Temporary Cylinder rendering
+	 * @param x The x coordinate of the bottom center
+	 * @param y The y coordinate of the bottom center
+	 * @param z The z coordinate of the bottom center
+	 * @param rad The Radius of the bottom circle
+	 * @param height The Height of the cylinder
+	 * @param n The number of edges on the circle, more means more smooth
+	 * @param g The Application graphics object
+	 */
 	private void renderCylinder(double x, double y, double z, double rad,  double height , double n ,Graphics g) {
 		renderCircle(x, y, z, rad, n, g);
 		
@@ -243,24 +221,19 @@ public class Screen {
 			pp.render(g, camera, false);
 		}
 		
-		
 		renderCircle(x, y, z + height, rad, n, g);
-		
-		
-		
-		
-		
 	}
 	
 	
-	
+	/**
+	 * Populates the shapes to render such as the checker floor and the "man"
+	 */
 	private void populateShapes() {
 		
 		shapes.add(new Shape(new Polygon(Color.RED, new Coordinate(0+100,0,10),
 													 new Coordinate(0+100,100,10),
 													 new Coordinate(100+100,100,10),
 													 new Coordinate(100+100,0,10))));
-		
 		//populate the floor
 		Shape floorShape = new Shape();
 		boolean flag = true;
@@ -296,6 +269,8 @@ public class Screen {
 		//bottom
 		cubeShape.addPoly(new Polygon(Color.GREEN, true, new Coordinate(0,0,0), new Coordinate(0,100,0),
 				new Coordinate(100,100,0), new Coordinate(100,0,0)));
+		
+		//shapes.add(cubeShape);
 
 		Color woodColor = new Color(242, 194, 146);
 		Shape cranium = new Shape(woodColor, new Coordinate(500 - 10, 500 - 10, 450), 80, 80, 50);
@@ -367,5 +342,32 @@ public class Screen {
 		shapes.add(rAnkle);
 		shapes.add(rFoot);
 	}
+	
+	//Getters and Setters-----------------------------------------------------------------------------------------------
+	
+	public void moveCamera(double angle) {
+		camera.move(angle);
+	}
 
+	public void scollCamera(double dir) {
+		camera.scrollCamera(dir);
+	}
+
+	public void rotateCamera(double xdir, double ydir) {
+		camera.rotateCamera(xdir, ydir);
+	}
+
+	public void click(int x, int y, MouseEvent e) {
+
+	}
+
+	public List<Camera> getCameras() {
+		return cameras;
+	}
+	
+	public void setCamera(Camera cam) {
+		this.camera = cam;
+	}
+	
+	//End of Getters and Setters
 }

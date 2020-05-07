@@ -5,6 +5,11 @@ import java.awt.Graphics;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * A Collection of Polygons
+ * @author Vadim
+ *
+ */
 public class Shape {
 
 	private List<Polygon> polygons;

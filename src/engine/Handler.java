@@ -10,33 +10,44 @@ import java.awt.event.MouseWheelListener;
 
 import javax.swing.SwingUtilities;
 
+/**
+ * Key and mouse Listener. Saves the keys that are pressed in a boolean array and also saves the mouse Mouse position
+ * 
+ * 
+ * Instead of using the listener to do actions in the game (Which may cause the tick to not
+ * be synched), it might be like an extra thread messing with game/data flow, Save the mouse
+ * info like mouse x,y, left/right/middle boolean, isDrag? Too much game logic in the 
+ * mouse action listeners. Have a previous keys/mouse information saved so it can be used in game
+ * logic
+ * 
+ * @author Vadim
+ *
+ */
 public class Handler implements KeyListener, MouseListener, MouseMotionListener, MouseWheelListener {
+	
 	public boolean[] keys = new boolean[65536];//make retrieve only for other classes
 	public int mouseX;
 	public int mouseY;
-	
-	
-	private Screen screen = new Screen(this);
-
-	/*
-	 * Instead of using the listener to do actions in the game (Which may cause the tick to not
-	 * be synched), it might be like an extra thread messing with game/data flow, Save the mouse
-	 * info like mouse x,y, left/right/middle boolean, isDrag? Too much game logic in the 
-	 * mouse action listeners
-	 * 
-	 */
 	private int oldX = 0;
 	private int oldY = 0;
+	
+	private Screen screen = new Screen(this);
+	private SideGUI side;
 
-	public Handler() {}
+	public Handler() {
+		side = new SideGUI(this);
+	}
 
 	public void tick() {
 		screen.tick();
+		side.tick();
 	}
 
 	public void render(Graphics g) {
 		screen.render(g);
 	}
+	
+	//Key and Mouse Listener--------------------------------------------------------------------------------------------
 
 	@Override
 	public void mouseWheelMoved(MouseWheelEvent e) {		
@@ -114,8 +125,18 @@ public class Handler implements KeyListener, MouseListener, MouseMotionListener,
 	@Override
 	public void keyTyped(KeyEvent arg0) {}
 	
+	//End of Key and Mouse Listener-------------------------------------------------------------------------------------
+	
+	//Getters-----------------------------------------------------------------------------------------------------------
+	
 	public Screen getScreen() {
 		return screen;
 	}
+	
+	public SideGUI getSide() {
+		return side;
+	}
+	
+	//End of Getters----------------------------------------------------------------------------------------------------
 
 }

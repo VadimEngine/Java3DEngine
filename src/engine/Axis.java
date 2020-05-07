@@ -3,8 +3,7 @@ import java.awt.Color;
 import java.awt.Graphics;
 
 /**
- * Draws the axis and rotates by converting from spherical coordinates to
- * Cartesian 
+ * Draws the axis and rotates by converting from spherical coordinates to Cartesian 
  * @author user
  *
  */

@@ -3,10 +3,18 @@ import java.awt.Canvas;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.RenderingHints;
 import java.awt.image.BufferStrategy;
 
 import javax.swing.JPanel;
 
+/**
+ * Engine class that runs the the engine class in a thread which repeatedly calls tick() and render() 60 times a second.
+ * 
+ * @author user
+ *
+ */
 public class Engine extends JPanel implements Runnable {
 
 	private static final long serialVersionUID = 1L;
@@ -17,11 +25,15 @@ public class Engine extends JPanel implements Runnable {
 	private Thread thread;
 	private int frames;
 	private Handler handler;
-	
 	private Canvas canvas = new Canvas();
-	private SideGUI side;
 	
-
+	private boolean antiAliasing = false;
+	
+	
+	/**
+	 * Builds the canvas which the application is rendered on and creates a Handler object to handler the rendering
+	 * and backend logic.
+	 */
 	public Engine() {
 		handler = new Handler();
 		Dimension size = new Dimension(WIDTH, HEIGHT);
@@ -33,8 +45,8 @@ public class Engine extends JPanel implements Runnable {
 		canvas.addMouseMotionListener(handler);
 		canvas.addMouseWheelListener(handler);
 		add(canvas);
-		side = new SideGUI(handler);
-		add(side);
+		//side = new SideGUI(handler);
+		add(handler.getSide());
 	}
 	
 	public synchronized void start() {
@@ -58,6 +70,10 @@ public class Engine extends JPanel implements Runnable {
 		}
 	}
 
+	/**
+	 * Calls tick() at 60 calls a second and render() up to 60 times a second depending on how long it takes to
+	 * to process tick() and render()
+	 */
 	@Override
 	public void run() {
 		int frames = 0;
@@ -104,15 +120,17 @@ public class Engine extends JPanel implements Runnable {
 	
 	
 	/**
-	 * This is the tick method written
+	 * Main Tick method, calls handler.tick() to update the backend logic
 	 * 
-	 * @return returns nothing
 	 */
 	public void tick() {
 		handler.tick();
-		side.tick();
 	}
 	
+	/**
+	 * Main render method, uses a a triple BufferStrategy as passes the Graphic object to handler to handler
+	 * render logic and draw the application
+	 */
 	public void render() {
 		BufferStrategy bs = canvas.getBufferStrategy();
 		if (bs == null) {
@@ -120,8 +138,10 @@ public class Engine extends JPanel implements Runnable {
 			return;
 		}
 		Graphics g = bs.getDrawGraphics();
-		//((Graphics2D) g).setRenderingHint(RenderingHints.KEY_ANTIALIASING,
-        //      RenderingHints.VALUE_ANTIALIAS_ON);
+		if (antiAliasing) {
+			((Graphics2D) g).setRenderingHint(RenderingHints.KEY_ANTIALIASING,
+	              RenderingHints.VALUE_ANTIALIAS_ON);
+		}
 		g.setColor(Color.BLUE);
 		g.fillRect(0, 0, getWidth(), getHeight());
 		handler.render(g);
@@ -129,10 +149,6 @@ public class Engine extends JPanel implements Runnable {
 		g.drawString(Integer.toString(frames), 20, 20);
 		g.dispose();
 		bs.show();	
-	}
-	
-	public Handler getHandler() {
-		return handler;
 	}
 	
 }

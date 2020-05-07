@@ -3,7 +3,12 @@ import java.awt.BorderLayout;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 
-public class Driver{
+/**
+ * Driver class that builds the Frame to hold the Engine JPanel and starts the game engine.
+ * @author Vadim
+ *
+ */
+public class Driver {
 	
 	public static void main(String args[]) {
 		Engine engine = new Engine();
@@ -20,6 +25,4 @@ public class Driver{
 	
 		engine.start();
 	}
-	
-
 }

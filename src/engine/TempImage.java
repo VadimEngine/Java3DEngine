@@ -9,6 +9,11 @@ import java.io.IOException;
 
 import javax.imageio.ImageIO;
 
+/**
+ * Work in progress code to render polygons with image textures
+ * @author Vadim
+ *
+ */
 public class TempImage {
 	
 	static double tempAngle = 0;
