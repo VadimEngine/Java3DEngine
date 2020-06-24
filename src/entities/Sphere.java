@@ -1,7 +1,11 @@
-package engine;
+package entities;
 
 import java.awt.Color;
 import java.awt.Graphics;
+
+import engine.Calculator;
+import engine.Camera;
+import engine.Coordinate;
 
 
 /** 

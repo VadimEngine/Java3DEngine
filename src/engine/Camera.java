@@ -8,6 +8,9 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
+import entities.Polygon;
+import entities.Shape;
+
 
 
 /**
@@ -20,7 +23,6 @@ import java.util.List;
  *
  */
 public class Camera {
-
 	private DecimalFormat df = new DecimalFormat("#.00");
 
 	private static final int MAX_ANGLE = 360;
@@ -32,7 +34,22 @@ public class Camera {
 	private double xyAngle = 0;
 	private double zyAngle = 90;//0 points directly up
 	private double xzAngle = 0;
-	private int near = 620;
+	private double near = 620;
+	
+	
+	private double cosXY;
+	private double sinXY; 
+	
+	private double cosZY; 
+	private double sinZY; 
+	
+	private double cosXZ;
+	private double sinXZ;
+	
+	private double cachedXyAngle = xyAngle;
+	private double cachedZyAngle = zyAngle;
+	private double cachedXzAngle = xzAngle;
+	
 	
 	private boolean clickP = true;
 
@@ -47,6 +64,15 @@ public class Camera {
 		//this.y = y;
 		//this.z  = z;
 		position = new Coordinate(x, y, z);
+		
+		cosXY = Math.cos((xyAngle) * Math.PI/180);
+		sinXY = Math.sin((xyAngle) * Math.PI/180);
+		
+		cosZY = Math.cos((zyAngle) * Math.PI/180);
+		sinZY = Math.sin((zyAngle) * Math.PI/180);
+		
+		cosXZ = Math.cos(-(xzAngle) * Math.PI/180);
+		sinXZ = Math.sin(-(xzAngle) * Math.PI/180);
 	}
 
 	/**
@@ -62,16 +88,20 @@ public class Camera {
 	public void tick(Handler handler, boolean focus) {
 		if (focus) {
 			//only do trig calculations when needed(W||A||S||D||RIGHT||etc.)
+			
 			double zy = (zyAngle) * Math.PI/180.0;
 			double xy = (xyAngle+90.0) * Math.PI/180.0;
 			double sinZY = Math.sin(zy);
 			double sinXY = Math.sin(xy);
 			double cosZY = Math.cos(zy);
 			double cosXY = Math.cos(xy);
+		
 			
 //			double xz = (xzAngle) * Math.PI/180;
 //			double sinXZ = Math.sin(xz);
 //			double cosXZ = Math.sin(xz);
+  			
+			
 
 			if (handler.keys[KeyEvent.VK_W]) {
 				position.addX( sinZY*cosXY*(speed* 5.0) );
@@ -112,6 +142,7 @@ public class Camera {
 				position.addY( sinZYLeft*sinXYLeft*(speed* 5.0) );
 				position.addZ( cosZYLeft * (speed* 5.0) );
 			}
+			
 
 			if (handler.keys[KeyEvent.VK_RIGHT]) {
 				xyAngle = Math.floorMod((int)(xyAngle - speed), MAX_ANGLE);
@@ -152,12 +183,10 @@ public class Camera {
 			if (handler.keys[KeyEvent.VK_COMMA]) {
 				near--;
 			}
-
 		}
-
 	}
 
-	public void render(Graphics g, Camera c) {
+	public void render(Graphics g, Camera c) {		
 		Shape shape = new Shape(Color.GREEN, new Coordinate(position.getX(), position.getY(),
 															position.getZ()), 10, 10, 10);
 
@@ -285,6 +314,60 @@ public class Camera {
 	public double getXZAngle() {
 		return xzAngle;
 	}
+	
+	public double getCosXY() {		
+		if (cachedXyAngle != xyAngle) {
+			cachedXyAngle = xyAngle;
+			cosXY = Math.cos((xyAngle) * Math.PI/180);
+			sinXY = Math.sin((xyAngle) * Math.PI/180);
+		}
+		
+		return cosXY;
+	}
+	
+	public double getSinXY() {
+		if (cachedXyAngle != xyAngle) {
+			cachedXyAngle = xyAngle;
+			cosXY = Math.cos((xyAngle) * Math.PI/180);
+			sinXY = Math.sin((xyAngle) * Math.PI/180);
+		}
+		return sinXY;
+	}
+	
+	public double getCosZY() {
+		if (cachedZyAngle != zyAngle) {
+			cachedZyAngle = zyAngle;
+			cosZY = Math.cos((zyAngle) * Math.PI/180);
+			sinZY = Math.sin((zyAngle) * Math.PI/180);
+		}
+		return cosZY;
+	} 
+	
+	public double getSinZY() {
+		if (cachedZyAngle != zyAngle) {
+			cachedZyAngle = zyAngle;
+			cosZY = Math.cos((zyAngle) * Math.PI/180);
+			sinZY = Math.sin((zyAngle) * Math.PI/180);
+		}
+		return sinZY;
+	}
+	
+	public double getCosXZ() {
+		if (cachedXzAngle != xzAngle) {
+			cachedZyAngle = zyAngle;
+			cosXZ = Math.cos(-(xzAngle) * Math.PI/180);
+			sinXZ = Math.sin(-(xzAngle) * Math.PI/180);
+		}
+		return cosXZ;
+	}
+	public double getSinXZ() {
+		if (cachedXzAngle != xzAngle) {
+			cachedZyAngle = zyAngle;
+			cosXZ = Math.cos(-(xzAngle) * Math.PI/180);
+			sinXZ = Math.sin(-(xzAngle) * Math.PI/180);
+		}
+		return sinXZ;
+	}
 
 	public double[] getUnitComponent() {//take in unit size? take all 3 angles into account.
 		double zy = (zyAngle) * Math.PI/180.0;
@@ -313,7 +396,7 @@ public class Camera {
 		this.zyAngle = zyAngle;
 	}
 
-	public int getNear() {
+	public double getNear() {
 		return near;
 	}
 
@@ -321,7 +404,6 @@ public class Camera {
 	public String toString() {
 		String pos = "Position: " + df.format(position.getX()) + ", " + df.format(position.getY())  + ", " + df.format(position.getZ());
 		String angles = "Angle: " + df.format(xyAngle) + ", " + df.format(zyAngle) + ", " + df.format(xzAngle);
-
 		return pos +"    \n\r   " + angles;
 	}
 
@@ -336,7 +418,6 @@ public class Camera {
 		position.addX( sinZY*cosXY*(speed* 5.0) );
 		position.addY( sinZY*sinXY*(speed* 5.0) );
 		position.addZ( cosZY * (speed* 5.0) );
-		
 	}
 
 }

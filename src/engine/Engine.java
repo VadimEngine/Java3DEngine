@@ -46,7 +46,7 @@ public class Engine extends JPanel implements Runnable {
 		canvas.addMouseWheelListener(handler);
 		add(canvas);
 		//side = new SideGUI(handler);
-		add(handler.getSide());
+		//add(handler.getSide());
 	}
 	
 	public synchronized void start() {
@@ -105,7 +105,7 @@ public class Engine extends JPanel implements Runnable {
 					frames = 0;
 				}
 			}
-			if (ticked) {
+			if (ticked || this != null) {
 				render();
 				frames++;
 			} else {
@@ -143,7 +143,7 @@ public class Engine extends JPanel implements Runnable {
 	              RenderingHints.VALUE_ANTIALIAS_ON);
 		}
 		g.setColor(Color.BLUE);
-		g.fillRect(0, 0, getWidth(), getHeight());
+		//g.fillRect(0, 0, getWidth(), getHeight());
 		handler.render(g);
 		g.setColor(Color.WHITE);
 		g.drawString(Integer.toString(frames), 20, 20);

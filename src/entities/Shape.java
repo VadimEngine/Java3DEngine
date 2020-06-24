@@ -1,9 +1,13 @@
-package engine;
+package entities;
 
 import java.awt.Color;
 import java.awt.Graphics;
 import java.util.ArrayList;
 import java.util.List;
+
+import engine.Calculator;
+import engine.Camera;
+import engine.Coordinate;
 
 /**
  * A Collection of Polygons

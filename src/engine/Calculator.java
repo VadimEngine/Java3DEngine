@@ -19,7 +19,8 @@ public class Calculator {
 	private Calculator(){}	
 	
 	public static Coordinate rotateAroundCenter(Coordinate coord, Coordinate center, 
-			double XYAngle, double XZAngle, double ZYAngle) {
+												double XYAngle, double XZAngle, double ZYAngle) {
+		
 		double cosXY = Math.cos(-(XYAngle) * Math.PI/180);
 		double sinXY = Math.sin(-(XYAngle) * Math.PI/180);
 		
@@ -58,19 +59,24 @@ public class Calculator {
 	 * 
 	 * Right hand rule coordinates and right hand rule rotations?
 	 * 
+	 * NEW NOTE
+	 * Behaves different than rotateAroundCenter because rotateAround Camera rotates everything the opposite direction of the camera
+	 * in order to simulate the camera rotating
+	 * 
+	 * 
 	 * @param coord
 	 * @param cam
 	 * @return
 	 */
 	public static Coordinate rotateAroundCamera(Coordinate coord, Camera cam) {
-		double cosXY = Math.cos((cam.getXYAngle()) * Math.PI/180);
-		double sinXY = Math.sin((cam.getXYAngle()) * Math.PI/180);
+		double cosXY = cam.getCosXY();
+		double sinXY = cam.getSinXY();
 		
-		double cosZY = Math.cos((cam.getZYAngle()) * Math.PI/180);
-		double sinZY = Math.sin((cam.getZYAngle()) * Math.PI/180);
+		double cosZY = cam.getCosZY();
+		double sinZY = cam.getSinZY();
 		
-		double cosXZ = Math.cos(-(cam.getXZAngle()) * Math.PI/180);
-		double sinXZ = Math.sin(-(cam.getXZAngle()) * Math.PI/180);
+		double cosXZ = cam.getCosXZ();
+		double sinXZ = cam.getSinXZ();
 		
 		double[] rot = new double[]{coord.getX() - cam.getX(), coord.getY()- cam.getY(), coord.getZ() - cam.getZ()};
 		
@@ -98,6 +104,13 @@ public class Calculator {
 		return new Coordinate(rot[0], rot[1], rot[2]);
 	}
 	
+	//methods to generate rotational matrices
+	
+	public double zOnPlane(Coordinate c1, Coordinate c2, Coordinate c3, double xPos, double yPost) {
+		return 0;
+	}
+	
+	
 	
 	private static double[] matrixMult(double[] m1, double[][] m2) {
 		double[] result = new double[m1.length];
@@ -106,5 +119,7 @@ public class Calculator {
 		result[2] = m1[0] * m2[0][2] + m1[1] * m2[1][2] + m1[2] * m2[2][2];
 		return result;
 	}	
+	
+
 	
 }

@@ -33,25 +33,38 @@ public class Handler implements KeyListener, MouseListener, MouseMotionListener,
 	
 	private Screen screen = new Screen(this);
 	private SideGUI side;
+	
+	
+	private RenderHandler renderer;
+	private LogicHandler logicHandler;
+	
 
 	public Handler() {
-		side = new SideGUI(this);
+		//side = new SideGUI(this);		
+		renderer = new RenderHandler(screen);
+		logicHandler = new LogicHandler(this);
+		
 	}
 
 	public void tick() {
-		screen.tick();
-		side.tick();
+		//screen.tick();
+		//side.tick();
+		
+		logicHandler.tick();
 	}
 
 	public void render(Graphics g) {
-		screen.render(g);
+		//creen.render(g);
+		
+		logicHandler.render(renderer);
+		renderer.render(g);
 	}
 	
 	//Key and Mouse Listener--------------------------------------------------------------------------------------------
 
 	@Override
 	public void mouseWheelMoved(MouseWheelEvent e) {		
-		screen.scollCamera(e.getPreciseWheelRotation());
+		logicHandler.scollCamera(e.getPreciseWheelRotation());
 	}
 
 	@Override
@@ -60,7 +73,7 @@ public class Handler implements KeyListener, MouseListener, MouseMotionListener,
 			double angle = Math.atan2((oldX - e.getX()), (oldY - e.getY()));
 			angle = angle * 180.0/Math.PI;
 			angle = (angle + 90) % 360;
-			screen.moveCamera(angle);
+			logicHandler.moveCamera(angle);
 			
 			oldX = e.getX();
 			oldY = e.getY();
@@ -68,7 +81,7 @@ public class Handler implements KeyListener, MouseListener, MouseMotionListener,
 		if ((e.getX() != oldX || e.getY() != oldY) && SwingUtilities.isRightMouseButton(e)) {
 			int xdir = oldX - e.getX();
 			int ydir = oldY - e.getY(); 
-			screen.rotateCamera( xdir,  ydir ); 
+			logicHandler.rotateCamera( xdir,  ydir ); 
 			
 			oldX = e.getX();
 			oldY = e.getY();
@@ -100,7 +113,7 @@ public class Handler implements KeyListener, MouseListener, MouseMotionListener,
 
 	@Override
 	public void mousePressed(MouseEvent e) {
-		screen.click(e.getX(), e.getY(), e);
+		logicHandler.click(e.getX(), e.getY(), e);
 	}
 
 	@Override

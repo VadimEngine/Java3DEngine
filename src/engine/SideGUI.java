@@ -15,6 +15,8 @@ import javax.swing.border.EmptyBorder;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
+import entities.Polygon;
+
 /**
  * Side GUI object for controlling the cameras. Work in progress to manage the polygons and drawing polygons
  * @author user
@@ -44,7 +46,7 @@ public class SideGUI extends JPanel {
 	 * @param handler The application Graphics object
 	 */
 	public SideGUI(Handler handler) {
-		List<Camera> cams = handler.getScreen().getCameras();
+		//List<Camera> cams = handler.getScreen().getCameras();
 		setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
 		add(testdrop2);
 		add(switchB);
@@ -53,7 +55,7 @@ public class SideGUI extends JPanel {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
 				Camera cam = (Camera) testdrop2.getSelectedItem();
-				handler.getScreen().setCamera(cam);
+				//handler.getScreen().setCamera(cam);
 				angleSlider1.setValue((int)cam.getXYAngle());
 				angleSlider2.setValue((int)cam.getZYAngle());
 				angleSlider3.setValue((int)cam.getXZAngle());
@@ -74,9 +76,9 @@ public class SideGUI extends JPanel {
 		
 		forward.setFocusable(false);
 		
-		for (int i = 0; i < cams.size(); i++) {
-			testdrop2.addItem(cams.get(i));
-		}
+		//for (int i = 0; i < cams.size(); i++) {
+		//	testdrop2.addItem(cams.get(i));
+		//}
 		testdrop2.setFocusable(false);
 		testdrop2.addActionListener(new ActionListener() {
 			@Override

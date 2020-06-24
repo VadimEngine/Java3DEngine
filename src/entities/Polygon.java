@@ -1,4 +1,4 @@
-package engine;
+package entities;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
@@ -6,6 +6,10 @@ import java.awt.geom.Path2D;
 import java.awt.geom.Point2D;
 import java.util.ArrayList;
 import java.util.List;
+
+import engine.Calculator;
+import engine.Camera;
+import engine.Coordinate;
 
 /**
  * A polygon that build by 3 or more coordinates and can be rendered.
@@ -20,6 +24,11 @@ public class Polygon {
 	private int testX = 0;//used as a test way to move shape
 	private boolean testMove;
 	
+	
+	private Rectangle theRect;
+	private Triangle theTri;
+	
+	
 	/**
 	 * Constructor that sets the color and polygon vertices 
 	 * 
@@ -31,6 +40,22 @@ public class Polygon {
 		for (int i = 0; i < coords.size(); i++) {
 			this.coords.add(coords.get(i));
 		}
+		
+		if (coords.size() == 4) {
+			Coordinate p1 = coords.get(0);
+			Coordinate p2 = coords.get(1);
+			Coordinate p3 = coords.get(2);
+			Coordinate p4 = coords.get(3);
+			
+			theRect = new Rectangle(p1, p2, p3, p4, color);
+		} else if (coords.size() == 4) {
+			Coordinate p1 = coords.get(0);
+			Coordinate p2 = coords.get(1);
+			Coordinate p3 = coords.get(2);
+			theTri = new Triangle(p1, p2, p3, color);
+		}
+		
+		
 	}
 	
 	/**
@@ -44,6 +69,22 @@ public class Polygon {
 		for (int i = 0; i < coord.length; i++) {
 			coords.add(coord[i]);
 		}
+		
+		if (coords.size() == 4) {
+			Coordinate p1 = coords.get(0);
+			Coordinate p2 = coords.get(1);
+			Coordinate p3 = coords.get(2);
+			Coordinate p4 = coords.get(3);
+			
+			theRect = new Rectangle(p1, p2, p3, p4, color);
+		} else if (coords.size() == 4) {
+			Coordinate p1 = coords.get(0);
+			Coordinate p2 = coords.get(1);
+			Coordinate p3 = coords.get(2);
+			theTri = new Triangle(p1, p2, p3, color);
+		}
+		
+		
 	}
 	
 	/**
@@ -105,9 +146,10 @@ public class Polygon {
 	 * @param c The Viewing Camera
 	 */
 	public void render(Graphics g, Camera c) {
+		//check if at least one point is inside the view
 		boolean oneInbound = false;
-		Coordinate coords = this.coords.get(0);
-		Coordinate rot = Calculator.rotateAroundCamera(coords, c);
+		Coordinate coord = this.coords.get(0);
+		Coordinate rot = Calculator.rotateAroundCamera(coord, c);
 				
 		Path2D shape = new Path2D.Double();
 		shape.moveTo(rot.getX(), rot.getY());
@@ -117,8 +159,8 @@ public class Polygon {
 		}
 
 		for (int i = 1; i <= this.coords.size(); i++) {
-			coords = this.coords.get(i % this.coords.size());
-			rot = Calculator.rotateAroundCamera(coords, c);
+			coord = this.coords.get(i % this.coords.size());
+			rot = Calculator.rotateAroundCamera(coord, c);
 			if (rot.getX() >= 0 && rot.getX() <= 640 + 256 && rot.getY() >= 0 && rot.getY() <= 640 + 256) {
 				oneInbound = true;
 			}
@@ -127,7 +169,7 @@ public class Polygon {
 			}
 			shape.lineTo(rot.getX(), rot.getY());
 		}
-
+		
 		if (oneInbound) {
 			g.setColor(color);
 			((Graphics2D) g).fill(shape);
@@ -249,6 +291,26 @@ public class Polygon {
 
 	public Color getColor() {
 		return color;
+	}
+	
+	public List<Triangle> getTriangles() {
+		if (theRect != null) {
+			List<Triangle> ret = theRect.getTriangles();
+			return ret;
+		}
+		
+		List<Triangle> ret = new ArrayList<>();
+		
+		if (theTri != null) {
+			ret.add(theTri);
+		}
+		
+		
+		for (int i = 0; i < ret.size(); i++) {
+			System.out.println("Poly: " + ret.get(i).getColor());
+		}
+		
+		return ret;
 	}
 
 	//End of Getters and Setters----------------------------------------------------------------------------------------
