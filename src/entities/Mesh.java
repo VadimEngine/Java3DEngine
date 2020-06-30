@@ -64,14 +64,14 @@ public class Mesh {
 	public static Mesh createCubeMesh() {
 		List<Coordinate> coordsRect = new ArrayList<>();
 		
-		coordsRect.add(new Coordinate(-50, -50, -50));	//0
-		coordsRect.add(new Coordinate(50, -50, -50));	//1
-		coordsRect.add(new Coordinate(50, 50, -50));	//2
-		coordsRect.add(new Coordinate(-50, 50, -50));	//3
-		coordsRect.add(new Coordinate(-50, -50, 50));	//4
-		coordsRect.add(new Coordinate(50, -50, 50));	//5
-		coordsRect.add(new Coordinate(50, 50, 50));		//6
-		coordsRect.add(new Coordinate(-50, 50, 50));	//7
+		coordsRect.add(new Coordinate(-1, -1, -1));	//0
+		coordsRect.add(new Coordinate(1, -1, -1));	//1
+		coordsRect.add(new Coordinate(1, 1, -1));	//2
+		coordsRect.add(new Coordinate(-1, 1, -1));	//3
+		coordsRect.add(new Coordinate(-1, -1, 1));	//4
+		coordsRect.add(new Coordinate(1, -1, 1));	//5
+		coordsRect.add(new Coordinate(1, 1, 1));		//6
+		coordsRect.add(new Coordinate(-1, 1, 1));	//7
 		
 		List<Integer> indices = new ArrayList<>();
 		

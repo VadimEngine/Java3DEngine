@@ -45,8 +45,9 @@ public class Engine extends JPanel implements Runnable {
 		canvas.addMouseMotionListener(handler);
 		canvas.addMouseWheelListener(handler);
 		add(canvas);
-		//side = new SideGUI(handler);
-		//add(handler.getSide());
+		SideGUI side = new SideGUI(handler);
+		handler.setSideGUI(side);
+		add(side);
 	}
 	
 	public synchronized void start() {

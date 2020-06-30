@@ -27,9 +27,7 @@ public class Screen {
 	 * @param handler The handler that holds this Screen
 	 */
 	public Screen(Handler handler) {
-		zBuffer = new double[640*640];
-		theScreen = new BufferedImage(640, 640, BufferedImage.TYPE_INT_RGB);		
-		pixels = ((DataBufferInt) theScreen.getRaster().getDataBuffer()).getData();	
+		this(handler, 640, 640);
 	}
 	
 	public Screen(Handler handler, int width, int height) {

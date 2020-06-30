@@ -10,10 +10,8 @@ import engine.RenderHandler;
 
 public class Object3D {
 	
-	private double temp = 1;
-	private double increment = 1;
-	
-	
+	private static int ObjectCount = 0;
+		
 	private Mesh theMesh;
 	
 	private Coordinate center = new Coordinate(0,0,0);
@@ -25,51 +23,43 @@ public class Object3D {
 	
 	private Color color = Color.DARK_GRAY;
 	
-	//rotates around z axis
-	private double xyAngle = 0;
+	//rotates around z axis (xyAngle)
+	private double zAngle = 0;
 	
-	//rotates around y axis
-	private double zyAngle = 0;
+	//rotates around y axis (zyAngle)
+	private double yAngle = 0;
 	
-	//rotates around x axis
-	private double xzAngle = 0;
+	//rotates around x axis (xzAngle)
+	private double xAngle = 0;
+	
+	
+	private String name;
+	
 	
 	public Object3D(Mesh theMesh) {
 		this.theMesh = theMesh;
+		
+		this.name = "Object " + ObjectCount++;
 	}
 	
 	public void tick() {
 		
 	}
 	
-	public void render(RenderHandler renderer, Camera cam) {
-		temp += increment;
-		if (temp > 360 || temp < 0) {
-			increment *= -1;
-		}
-		
-		//xScale = temp;
-		//yScale = temp;
-		//zScale = temp;
-		
-		//xyAngle = temp;
-		//zyAngle = temp;
-		//xzAngle = temp;
-		
-		center.setZ(temp);
-		
+	public void render(RenderHandler renderer, Camera cam, Color theColor) {		
 		List<Integer> indicies = theMesh.getIndices();
+		
+		//xAngle = tempCount++;
 		
 		for (int i = 0; i < indicies.size(); i+=3) {
 			Coordinate c1 = theMesh.getCoordinate(indicies.get(i));
 			Coordinate c2 = theMesh.getCoordinate(indicies.get(i + 1));
 			Coordinate c3 = theMesh.getCoordinate(indicies.get(i + 2));
 			
-			
 			//rotate around mesh center (0,0,0)
-			c1 = Calculator.rotateAroundCenter(c1, new Coordinate(0,0,0), xyAngle, zyAngle, xzAngle);
-			c2 = Calculator.rotateAroundCenter(c2, new Coordinate(0,0,0), xyAngle, zyAngle, xzAngle);
-			c3 = Calculator.rotateAroundCenter(c3, new Coordinate(0,0,0), xyAngle, zyAngle, xzAngle);
+			c1 = Calculator.rotateAroundCenter(c1, new Coordinate(0, 0, 0), zAngle, yAngle, xAngle);
+			c2 = Calculator.rotateAroundCenter(c2, new Coordinate(0, 0, 0), zAngle, yAngle, xAngle);
+			c3 = Calculator.rotateAroundCenter(c3, new Coordinate(0, 0, 0), zAngle, yAngle, xAngle);
 			
 			//Scale
 			c1.setX(c1.getX() * xScale);
@@ -101,16 +91,106 @@ public class Object3D {
 			c1 = Calculator.rotateAroundCamera(c1, cam);
 			c2 = Calculator.rotateAroundCamera(c2, cam);
 			c3 = Calculator.rotateAroundCamera(c3, cam);
-						
-			//renderer.renderTriangle(new Triangle(c1, c2, c3, color), cam);			
-			renderer.drawTriangleScanLine(c1, c2, c3, color);
+			
+			//translate by camera
+			//Set perspective
+								
+			renderer.drawTriangleScanLine(c1, c2, c3, theColor);
 			renderer.drawLine3D(c1, c2, Color.BLACK);
 			renderer.drawLine3D(c2, c3, Color.BLACK);
 			renderer.drawLine3D(c3, c1, Color.BLACK);
-			
-			//draw(c1, c2, c3, Color.WHITE);
-			//drawTriangle3DCorner(c1, c2, c3, Color.RED);
 		}
+	}
+	
+	
+	public void render(RenderHandler renderer, Camera cam) {		
+		render(renderer, cam, color);
+	}
+	
+	
+	public void setPosition(Coordinate newPos) {
+		this.center = newPos;
+	}
+	
+	public void setXPostion(double theX) {
+		center.setX(theX);
+	}
+	
+	public void setYPostion(double theY) {
+		center.setY(theY);
+	}
+	
+	public void setZPostion(double theZ) {
+		center.setZ(theZ);
+	}
+	
+	public void setXAngle(double xAngle) {
+		this.xAngle = xAngle;
+	}
+	
+	public void setYAngle(double yAngle) {
+		this.yAngle = yAngle;
+	}
+	
+	public void setZAngle(double zAngle) {
+		this.zAngle = zAngle;
+	}
+	
+	public void setXScale(double xScale) {
+		this.xScale = xScale;
+	}
+	
+	public void setYScale(double yScale) {
+		this.yScale = yScale;
+	}
+	
+	public void setZScale(double zScale) {
+		this.zScale = zScale;
+	}
+	
+	public void setName(String theName) {
+		name = theName;
+	}
+	
+	public Coordinate getPosition() {
+		return new Coordinate(center.getX(), center.getY(), center.getZ());
+	}
+	
+	public double getXAngle() {
+		return xAngle;
+	}
+	
+	public double getYAngle() {
+		return yAngle;
+	}
+	
+	public double getZAngle() {
+		return zAngle;
+	}
+	
+	public double getXScale() {
+		return xScale;
+	}
+	
+	public double getYScale() {
+		return yScale;
+	}
+	
+	public double getZScale() {
+		return zScale;
+	}
+	
+	public Mesh getMesh() {
+		return theMesh;
+	}
+	
+	public Color getColor() {
+		return Color.DARK_GRAY;
+	}
+	
+	@Override
+	public String toString() {
+		return name;
 	}
 
 }

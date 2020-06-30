@@ -8,6 +8,8 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
+import entities.Mesh;
+import entities.Object3D;
 import entities.Polygon;
 import entities.Shape;
 
@@ -53,6 +55,8 @@ public class Camera {
 	
 	private boolean clickP = true;
 
+	
+	private Object3D cameraBody;
 
 
 	public Camera() {
@@ -73,6 +77,11 @@ public class Camera {
 		
 		cosXZ = Math.cos(-(xzAngle) * Math.PI/180);
 		sinXZ = Math.sin(-(xzAngle) * Math.PI/180);
+		
+		cameraBody = new Object3D(Mesh.createCubeMesh());
+		cameraBody.setXScale(10);
+		cameraBody.setYScale(10);
+		cameraBody.setZScale(10);
 	}
 
 	/**
@@ -244,6 +253,16 @@ public class Camera {
 
 		g.setColor(Color.WHITE);
 		g.fillRect(320, 320, 4, 4);//reticle. Should only draw if main camera
+	}
+	
+	public void render(RenderHandler renderer, Camera cam) {		
+		cameraBody.setPosition(position);
+		cameraBody.setXAngle(xyAngle);
+		cameraBody.setYAngle(zyAngle);
+		cameraBody.setZAngle(xzAngle);
+		
+		cameraBody.render(renderer, cam);
+		
 	}
 
 	public void move(double angle) {
