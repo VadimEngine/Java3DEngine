@@ -106,7 +106,7 @@ public class Engine extends JPanel implements Runnable {
 					frames = 0;
 				}
 			}
-			if (ticked || this != null) {
+			if (ticked)  {//|| this != null)
 				render();
 				frames++;
 			} else {
