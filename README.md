@@ -1,12 +1,18 @@
 # Java3DEngine
 
-A custom 3D game rendering engine built using Java AWT (Abstract Window Toolkit) and Swing. All 3D logic is built from scratch but mostly relies on Java Graphics Object to draw a shape from a given set of coordinates. The positions of the polygons that are rendered are recalculating on a render method based on the Camera position and angles. All polygons are "rotated" around the camera by using 3 Matrix multiplication to rotate around the axis XY, XZ, and ZY. 
+A custom 3D game rendering engine built using Java AWT (Abstract Window Toolkit) and Swing. All 3D logic is built from scratch. Each rendered object is rendered with triangles which are made up of vertices and indices. The renderer will iterate the indices in groups of tree and draw a triangle from the vertices of those indices. The vertices-indices reduces the memory of 3D objects.
+
+Each triangle is draw onto a buffered image by splitting a triangle into a flat bottom and flat and horizontal lines are drawn to fill triangle with Bresenham's line algorithm. The lines are drawn onto a buffered image by setting each pixel with a x, y and z coordinate. A z-Buffer array stores the z coordinate of the last drawn pixel and a pixel will only be drawn if its z coordinate is smaller than the last drawn pixel and larger than and equal to 0. The position of the triangle is determined by the camera and the object that holds the vertices and indices. The position of the triangle is translated, rotated and scales by the containing object and then translated and rotated by the camera with rotational matrices.
+
+3D objects can be loaded from a .obj file of vertices and indices. As seen from the teapot which was loaded from a file.
+
+![Screen](./Screenshots/View5.png)
 
 The camera can moved and adjusted with the keyboard and mouse. The camera moves in the direction its facing with the "W" key, back with the "S" key, Left with the "A" Key and right with the "D" Key. The camera can rotate left and right with the left and right arrow keys. It ran face up and down with the l
 
 The camera responds to the following user input:
 * "W" Key: Move camera in the direction it's facing
-* "A" Key: Move camera left of the direction it's facing
+* "A" Key: Move camera left of the direction its facing
 * "S" Key: Mouse camera backwards of the direction it's facing
 * "D" Key: Move camera right of the direction it's facing
 * Left Arrow Key: Rotate the camera left
@@ -23,16 +29,13 @@ The camera responds to the following user input:
 * Mouse Drag (Right and middle mouse button): Moves the camera relative to the dragging motion
 * Mouse Wheel: moves the camera forward/backwards
 
-The JPanel on the right allows managing the cameras in the application. The drop down allow the user to select a camera. The "View" button allows the user to switch perspective to the selected camera. The "Move forward" button moves the selected camera in the direction its facing. The 3 sliders allow adjusting the selected camera's view angle. All cameras are green cubes with a red side representing where the camera is facing.
+The JPanel on the right allows managing the cameras, objects and adding new objects in the application. The JList lists all cameras and allow the user to select a camera. The "View" button allows the user to switch perspective to the selected camera. The "Move forward" button moves the selected camera in the direction its facing. The 3 sliders allow adjusting the selected camera's view angle. 
 
-In the center of the screen is a Reticle and a rectangle rendered on z=0. The rectangle on z=0 is the beginning progress on translating the mouse position into a 3d coordinate to help users to draw new polygons.
+The user can hover their cursor over objects which will be colored yellow and the blue when clicked and selected. Users can also select an object with the JList and edit the object's position, rotation and scale with the JTextFields.
 
-![Screen1](./Screenshots/View1.png)
 
-![Screen2](./Screenshots/View2.png)
+![Screen](./Screenshots/View4.png)
 
-![Screen3](./Screenshots/View3.png)
+Users can add objects into the environment by selecting from the Mesh JList and clicking the add button.
 
-The prebuilt shapes include a human figure made up of several cubes, a cylinder, and a 20 sided polyhedron (icosahedron). The icosahedron was work in progress for rendering spheres.
-
-Future versions would include allowing users to draw shapes. Add spheres and round shapes, give polygons textures, allow lighting and shadows, and more user configuration.
+![Screen1](./Screenshots/View6.png)
