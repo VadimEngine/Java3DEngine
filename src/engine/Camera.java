@@ -1,18 +1,9 @@
 package engine;
-import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.event.KeyEvent;
 import java.text.DecimalFormat;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
-
 import entities.Mesh;
 import entities.Object3D;
-import entities.Polygon;
-import entities.Shape;
-
 
 
 /**
@@ -38,7 +29,6 @@ public class Camera {
 	private double xzAngle = 0;
 	private double near = 620;
 	
-	
 	private double cosXY;
 	private double sinXY; 
 	
@@ -52,10 +42,6 @@ public class Camera {
 	private double cachedZyAngle = zyAngle;
 	private double cachedXzAngle = xzAngle;
 	
-	
-	private boolean clickP = true;
-
-	
 	private Object3D cameraBody;
 
 
@@ -64,9 +50,6 @@ public class Camera {
 	}
 
 	public Camera(double x, double y, double z) {
-		//this.x = x;
-		//this.y = y;
-		//this.z  = z;
 		position = new Coordinate(x, y, z);
 		
 		cosXY = Math.cos((xyAngle) * Math.PI/180);
@@ -105,12 +88,9 @@ public class Camera {
 			double cosZY = Math.cos(zy);
 			double cosXY = Math.cos(xy);
 		
-			
 //			double xz = (xzAngle) * Math.PI/180;
 //			double sinXZ = Math.sin(xz);
-//			double cosXZ = Math.sin(xz);
-  			
-			
+//			double cosXZ = Math.sin(xz);		
 
 			if (handler.keys[KeyEvent.VK_W]) {
 				position.addX( sinZY*cosXY*(speed* 5.0) );
@@ -151,7 +131,6 @@ public class Camera {
 				position.addY( sinZYLeft*sinXYLeft*(speed* 5.0) );
 				position.addZ( cosZYLeft * (speed* 5.0) );
 			}
-			
 
 			if (handler.keys[KeyEvent.VK_RIGHT]) {
 				xyAngle = Math.floorMod((int)(xyAngle - speed), MAX_ANGLE);
@@ -196,63 +175,7 @@ public class Camera {
 	}
 
 	public void render(Graphics g, Camera c) {		
-		Shape shape = new Shape(Color.GREEN, new Coordinate(position.getX(), position.getY(),
-															position.getZ()), 10, 10, 10);
 
-		if (clickP) {
-			shape.rotateAroundCenter(new Coordinate(position.getX() +5,
-													position.getY() +5,
-													position.getZ ()+5), xyAngle, xzAngle, zyAngle);
-		}		
-		
-		Coordinate c1 = new Coordinate(position.getX(),
-									   position.getY(),
-									   position.getZ() + 10);
-		Coordinate c2 =  new Coordinate(position.getX(),
-										position.getY()+10,
-										position.getZ()+10 );
-		Coordinate c3 =  new Coordinate(position.getX(), position.getY() + 10,  position.getZ() + 10);
-		Coordinate c4 =  new Coordinate(position.getX() + 10,  position.getY(),  position.getZ() + 10);
-
-		if (clickP) {			
-			c1 = Calculator.rotateAroundCenter(new Coordinate(position.getX(), position.getY(), position.getZ() + 10),
-											   new Coordinate(position.getX() +5, position.getY()+5, position.getZ()+5),
-											   xyAngle, xzAngle, zyAngle );
-			c2 = Calculator.rotateAroundCenter(new Coordinate(position.getX(), position.getY() + 10, position.getZ() + 10),
-											   new Coordinate(position.getX() +5, position.getY()+5, position.getZ()+5),
-											   xyAngle, xzAngle, zyAngle );
-			c3 = Calculator.rotateAroundCenter(new Coordinate(position.getX() + 10, position.getY() + 10, position.getZ() + 10),
-											   new Coordinate(position.getX() +5, position.getY()+5, position.getZ()+5),
-											   xyAngle, xzAngle, zyAngle );
-			c4 = Calculator.rotateAroundCenter(new Coordinate(position.getX() + 10, position.getY(), position.getZ() + 10),
-										       new Coordinate(position.getX() +5, position.getY()+5, position.getZ()+5),
-										       xyAngle, xzAngle, zyAngle );
-			
-		}
-		Polygon p = new Polygon(Color.RED, c1, c2, c3, c4);
-		List<Polygon> polys = new ArrayList<>(shape.getPolygons());
-		polys.add(p);
-
-		Collections.sort(polys, new Comparator<Polygon>() {
-			@Override
-			public int compare(Polygon o1, Polygon o2) {
-				if (o1.closestDist(c) < o2.closestDist(c)) {
-					return 1;
-				} else if (o1.closestDist(c) > o2.closestDist(c)) {
-					return -1;
-				} else {
-					return 0;
-				}
-			}
-
-		});
-
-		for (int i = 0; i < polys.size(); i++) {
-			polys.get(i).render(g, c);
-		}
-
-		g.setColor(Color.WHITE);
-		g.fillRect(320, 320, 4, 4);//reticle. Should only draw if main camera
 	}
 	
 	public void render(RenderHandler renderer, Camera cam) {		
@@ -262,7 +185,6 @@ public class Camera {
 		cameraBody.setZAngle(xzAngle);
 		
 		cameraBody.render(renderer, cam);
-		
 	}
 
 	public void move(double angle) {
@@ -340,7 +262,6 @@ public class Camera {
 			cosXY = Math.cos((xyAngle) * Math.PI/180);
 			sinXY = Math.sin((xyAngle) * Math.PI/180);
 		}
-		
 		return cosXY;
 	}
 	

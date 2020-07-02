@@ -18,18 +18,21 @@ import engine.Coordinate;
  */
 public class Mesh {
 	
+	private static int MeshCount = 0;
 	//middle coordinate defaults to 0,0,0
 	
 	//Use arrays instead?
 	private List<Coordinate> vertices;
 	private List<Integer> indices;
 	private Color color;
+	private String name;
 	
 	
 	public Mesh(List<Coordinate> vertices, List<Integer> indices, Color color) {
 		this.vertices = vertices;
 		this.indices = indices;
 		this.color = color;
+		this.name = "Mesh " + MeshCount++;
 	}
 	
 	public Mesh(List<Coordinate> vertices, List<Integer> indices) {
@@ -94,6 +97,15 @@ public class Mesh {
 		Collections.addAll(indices, new Integer[]{4,6,5});
 		
 		return new Mesh(coordsRect, indices);
+	}
+	
+	@Override
+	public String toString() {
+		return name;
+	}
+	
+	public void setName(String name) {
+		this.name = name;
 	}
 
 }

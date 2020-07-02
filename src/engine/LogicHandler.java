@@ -10,14 +10,13 @@ import java.util.List;
 import entities.Axis;
 import entities.Mesh;
 import entities.Object3D;
-import entities.Polygon;
 
 public class LogicHandler {
 	
 	private Camera theCamera;
 	private List<Camera> cameraList;
 	private Handler handler;
-	private List<Mesh> meshList;
+	//private List<Mesh> meshList;
 	
 	private Axis axis = new Axis();	
 
@@ -26,12 +25,18 @@ public class LogicHandler {
 	private Object3D selectedObject = null;
 	private Object3D hoverObject = null;
 	
+	private List<Object3D> theFloor;
+	
+	private boolean displayFloor = true;
+	
+	//Temporarily public and in this class
+	public List<Mesh> meshList = new ArrayList<>();
 	
 	
 	public LogicHandler(Handler handler) {
 		this.handler = handler;
 		theCamera = new Camera();
-		meshList = new ArrayList<>();
+		theFloor = new ArrayList<>();
 		objectList = new ArrayList<>();
 
 		populateMeshIndex();
@@ -39,9 +44,23 @@ public class LogicHandler {
 		cameraList = new ArrayList<>();
 		cameraList.add(theCamera);
 		
-		for (int i = 0; i < meshList.size(); i++) {
-			objectList.add(new Object3D(meshList.get(i)));
-		}
+		Mesh teapotMesh = MeshLoader.loadMesh();
+		teapotMesh.setName("TeaPot");
+		meshList.add(teapotMesh);
+		
+		//Plane Mesh
+		Mesh planeMesh = addRectagleMesh(-.5, -.5, 0, 1, 1).getMesh();
+		planeMesh.setName("Plane");
+		meshList.add(planeMesh);
+		
+		//Cube Mesh
+		Mesh theCubeMesh = addCubeMesh(-.5, -.5, -.5, 1,1,1).getMesh();
+		theCubeMesh.setName("Cube");
+		meshList.add(theCubeMesh);
+		
+		//Circle mesh
+		
+		//Cylinder mesh
 		
 	}
 	
@@ -60,13 +79,21 @@ public class LogicHandler {
 	public void render(RenderHandler renderer) {
 		axis.render(renderer, theCamera);
 		
-		for (Object3D eachObject: objectList) {
+		//for (Object3D eachObject: objectList) {
+		for (int i = 0; i < objectList.size(); i++) {
+			Object3D eachObject = objectList.get(i);
 			if (eachObject == selectedObject) {
 				eachObject.render(renderer, theCamera, Color.BLUE);
 			} else if (eachObject == hoverObject) {
 				eachObject.render(renderer, theCamera, Color.YELLOW);
 			} else {
 				eachObject.render(renderer, theCamera);
+			}
+		}
+		
+		if (displayFloor) {
+			for (Object3D eachFloor: theFloor) {
+				eachFloor.render(renderer, theCamera);
 			}
 		}
 		
@@ -88,8 +115,8 @@ public class LogicHandler {
 		Object3D localObj = null;
 		double z = Integer.MAX_VALUE;
 		
-		for (Object3D eachObj: objectList) {
-			
+		for (int j = 0; j < objectList.size(); j++) {
+			Object3D eachObj = objectList.get(j);
 			Mesh eachMesh = eachObj.getMesh();
 			
 			List<Integer> meshIndices = eachMesh.getIndices();
@@ -169,8 +196,8 @@ public class LogicHandler {
 		Coordinate c3 = new Coordinate(draw.getX() + width, draw.getY() + height, draw.getZ());
 		Coordinate c4 = new Coordinate(draw.getX() + width, draw.getY(), draw.getZ());
 
-		Polygon test = new Polygon(Color.YELLOW, draw, c2, c3, c4);
-		test.render(g, theCamera);
+		//Polygon test = new Polygon(Color.YELLOW, draw, c2, c3, c4);
+		//test.render(g, theCamera);
 	}
 	
 	/**
@@ -191,8 +218,8 @@ public class LogicHandler {
 			tempCords.add(new Coordinate(x2, y2, z));
 		}
 		
-		Polygon pp = new Polygon(Color.GREEN, tempCords);
-		pp.render(g, theCamera);
+		//Polygon pp = new Polygon(Color.GREEN, tempCords);
+		//pp.render(g, theCamera);
 	}
 	
 	/**
@@ -220,8 +247,8 @@ public class LogicHandler {
 			coords.add(new Coordinate(x1, y1, z + height));
 			coords.add(new Coordinate(x2, y2, z + height));
 			
-			Polygon pp = new Polygon(Color.GREEN, coords);
-			pp.render(g, theCamera, false);
+			//Polygon pp = new Polygon(Color.GREEN, coords);
+			//pp.render(g, theCamera, false);
 		}
 		
 		renderCircle(x, y, z + height, rad, n, g);
@@ -236,9 +263,9 @@ public class LogicHandler {
 		for (int i = 0; i < 10; i++) {//Lags at 50x50
 			for (int j = 0; j < 10; j++) {
 				if (flag) {
-					addRectagleMesh(i*height, j* width, 0, height, width); // new Color(60, 60, 60)
+					theFloor.add(addRectagleMesh(i*height, j* width, 0, height, width)); // new Color(60, 60, 60)
 				} else {
-					addRectagleMesh(i*height, j* width, 0, height, width);// new Color(37, 37, 37)
+					theFloor.add(addRectagleMesh(i*height, j* width, 0, height, width));// new Color(37, 37, 37)
 				}
 				flag = !flag;
 			}
@@ -247,11 +274,12 @@ public class LogicHandler {
 		
 		addCubeMesh(0, 0, 0, 50, 50, 50);
 		//Load mesh from file
-		//meshList.add(MeshLoader.loadMesh());
+		//objectList.add( new Object3D(MeshLoader.loadMesh()));
 		addManMesh();
 	}
 	
-	private void addCubeMesh(int x, int y, int z, int width, int depth, int height) {
+	private Object3D addCubeMesh(double x, double y, double z,
+			double width, double depth, double height) {
 		List<Coordinate> coords = new ArrayList<>();
 		List<Integer> indices = new ArrayList<>();
 				
@@ -278,11 +306,11 @@ public class LogicHandler {
 		Collections.addAll(indices, new Integer[]{4,7,6});
 		Collections.addAll(indices, new Integer[]{4,6,5});
 		Mesh theMesh = new Mesh(coords, indices);
-		
-		meshList.add(theMesh);
+		return new Object3D(theMesh);
+		//objectList.add(new Object3D(theMesh));
 	}
 	
-	private void addRectagleMesh(int x, int y, int z, int width, int height) {		
+	private Object3D addRectagleMesh(double x, double y, double z, double width, double height) {		
 		List<Coordinate> coords = new ArrayList<>();
 		List<Integer> indices = new ArrayList<>();
 		
@@ -292,50 +320,52 @@ public class LogicHandler {
 		coords.add(new Coordinate(x, y + height, z));
 		
 		Collections.addAll(indices, new Integer[]{0, 1, 2});
-		Collections.addAll(indices, new Integer[]{0, 3, 2});		
+		Collections.addAll(indices, new Integer[]{0, 3, 2});	
 		
-		meshList.add(new Mesh(coords, indices)); 
+		return new Object3D( new Mesh(coords, indices));
+		
+		//objectList.add(new Object3D( new Mesh(coords, indices))); 
 	}
 	
 	private void addManMesh() {
 		Color woodColor = new Color(242, 194, 146);
 		//Use color and Object3D
-		addCubeMesh(500 - 10, 500 - 10, 450, 80, 80, 50); // cranium
-		addCubeMesh(500 - 10, 500 - 10, 425, 80, 80, 25); // mandible
-		addCubeMesh(500, 500, 400, 50, 50, 25); // neck
+		objectList.add(addCubeMesh(-10,-10, 450, 80, 80, 50)); // cranium
+		objectList.add(addCubeMesh(-10, -10, 425, 80, 80, 25)); // mandible
+		objectList.add(addCubeMesh(0, 0, 400, 50, 50, 25)); // neck
 		
-		addCubeMesh(500 - 25 + 4, 500 - 10 + 4, 300, 100 - 4, 80 - 4, 100); // chest
-		addCubeMesh(500 - 25 + 4, 500 - 10 + 4, 250, 100 - 4, 80 - 4, 50); // waist
-		addCubeMesh(500 - 25 + 4, 500 - 10 + 4, 200, 100 - 4, 80 - 4, 50); // hip
+		objectList.add(addCubeMesh(-25 + 4, -10 + 4, 300, 100 - 4, 80 - 4, 100)); // chest
+		objectList.add(addCubeMesh(-25 + 4, -10 + 4, 250, 100 - 4, 80 - 4, 50)); // waist
+		objectList.add(addCubeMesh(-25 + 4, -10 + 4, 200, 100 - 4, 80 - 4, 50)); // hip
 		
-		addCubeMesh(500 - 75 + 4, 500, 375, 50, 50, 25); // lShoulder
-		addCubeMesh(500 - 75, 500, 300, 50, 50, 75); // lUpperArm
-		addCubeMesh(500 - 75 + 4, 500 + 4, 275, 42, 24, 25); // lElbow
-		addCubeMesh(500 - 75, 500, 200, 50, 50, 75); // lForearm
-		addCubeMesh(500 - 75 + 4, 500 + 4, 175, 42, 42, 25); // lWrist
-		addCubeMesh(500 - 75, 500, 150, 50, 50, 25); // lHand
+		objectList.add(addCubeMesh(-75 + 4, 0, 375, 50, 50, 25)); // lShoulder
+		objectList.add(addCubeMesh(-75, 0, 300, 50, 50, 75)); // lUpperArm
+		objectList.add(addCubeMesh(-75 + 4, 4, 275, 42, 24, 25)); // lElbow
+		objectList.add(addCubeMesh(-75, 0, 200, 50, 50, 75)); // lForearm
+		objectList.add(	addCubeMesh(-75 + 4, 4, 175, 42, 42, 25)); // lWrist
+		objectList.add(addCubeMesh(-75, 0, 150, 50, 50, 25)); // lHand
 		//fingers
 		
-		addCubeMesh(500 + 75 - 4, 500, 375, 50, 50, 25); // rShoulder
-		addCubeMesh(500 + 75, 500, 300, 50, 50, 75); // rUpperArm
-		addCubeMesh(500 + 75 + 4, 500 + 4, 275, 42, 42, 25); // rElbow
-		addCubeMesh(500 + 75, 500, 200, 50, 50, 75); // rForearm
-		addCubeMesh(500 + 75 + 4, 500 + 4, 175, 42, 42, 25);  // rWrist
-		addCubeMesh(500 + 75, 500, 150, 50, 50, 25); // rHand
+		objectList.add(addCubeMesh(75 - 4, 0, 375, 50, 50, 25)); // rShoulder
+		objectList.add(addCubeMesh(75, 0, 300, 50, 50, 75)); // rUpperArm
+		objectList.add(addCubeMesh(75 + 4, 4, 275, 42, 42, 25)); // rElbow
+		objectList.add(addCubeMesh(75, 0, 200, 50, 50, 75)); // rForearm
+		objectList.add(addCubeMesh(75 + 4, 4, 175, 42, 42, 25));  // rWrist
+		objectList.add(addCubeMesh(75, 0, 150, 50, 50, 25)); // rHand
 		//fingers
 		
-		addCubeMesh(500 - 25, 500, 125, 50, 50, 75); // lQuad
-		addCubeMesh(500 - 25 + 4, 500 + 4, 100, 50 - 4, 50 - 4, 25); // lKnee
-		addCubeMesh(500 - 25, 500, 25, 50, 50, 75); // lShin
-		addCubeMesh(500 - 25, 500, 0, 50, 50, 25); // lAnkle
-		addCubeMesh(500 - 25, 500 + 25, 0, 50, 75, 25); // lFoot
+		objectList.add(addCubeMesh(-25, 0, 125, 50, 50, 75)); // lQuad
+		objectList.add(addCubeMesh(-25 + 4, 4, 100, 50 - 4, 50 - 4, 25)); // lKnee
+		objectList.add(addCubeMesh(-25, 0, 25, 50, 50, 75)); // lShin
+		objectList.add(addCubeMesh(-25, 0, 0, 50, 50, 25)); // lAnkle
+		objectList.add(addCubeMesh(-25, 25, 0, 50, 75, 25)); // lFoot
 		//toes, hip joint
 		
-		addCubeMesh(500 + 25, 500, 125, 50, 50, 75); //rQuad
-		addCubeMesh(500 + 25 + 4, 500 + 4, 100, 50 - 4, 50 - 4, 25); // rKnee
-		addCubeMesh(500 + 25, 500, 25, 50, 50, 75); // rShin
-		addCubeMesh(500 + 25, 500, 0, 50, 50, 25); // rAnkle
-		addCubeMesh(500 + 25, 500 + 25, 0, 50, 75, 25); // rFoot
+		objectList.add(addCubeMesh(25, 0, 125, 50, 50, 75)); //rQuad
+		objectList.add(addCubeMesh(25 + 4, 4, 100, 50 - 4, 50 - 4, 25)); // rKnee
+		objectList.add(addCubeMesh(25, 0, 25, 50, 50, 75)); // rShin
+		objectList.add(addCubeMesh(25, 0, 0, 50, 50, 25)); // rAnkle
+		objectList.add(addCubeMesh(25, 0 + 25, 0, 50, 75, 25)); // rFoot
 		//toes, hip joint
 	}
 	
@@ -377,5 +407,13 @@ public class LogicHandler {
 	public void setSelectedObject(Object3D theObject) {
 		this.selectedObject = theObject;
 	}
+	
+	public void setFloorDisplay(boolean displayFloor) {
+		this.displayFloor = displayFloor;
+	}
 
+	public void addObject3D(Mesh theMesh) {
+		objectList.add(new Object3D(theMesh));
+	}
+	
 }
