@@ -37,8 +37,12 @@ public class Object3D {
 	
 	
 	public Object3D(Mesh theMesh) {
+		this(theMesh, Color.DARK_GRAY);
+	}
+	
+	public Object3D(Mesh theMesh, Color theColor) {
+		this.color = theColor;
 		this.theMesh = theMesh;
-		
 		this.name = "Object " + ObjectCount++;
 	}
 	
@@ -57,9 +61,12 @@ public class Object3D {
 			Coordinate c3 = theMesh.getCoordinate(indicies.get(i + 2));
 			
 			//rotate around mesh center (0,0,0)
-			c1 = Calculator.rotateAroundCenter(c1, new Coordinate(0, 0, 0), zAngle, yAngle, xAngle);
-			c2 = Calculator.rotateAroundCenter(c2, new Coordinate(0, 0, 0), zAngle, yAngle, xAngle);
-			c3 = Calculator.rotateAroundCenter(c3, new Coordinate(0, 0, 0), zAngle, yAngle, xAngle);
+			if (zAngle != 0 && yAngle != 0 && xAngle != 0) {
+				c1 = Calculator.rotateAroundCenter(c1, new Coordinate(0, 0, 0), zAngle, yAngle, xAngle);
+				c2 = Calculator.rotateAroundCenter(c2, new Coordinate(0, 0, 0), zAngle, yAngle, xAngle);
+				c3 = Calculator.rotateAroundCenter(c3, new Coordinate(0, 0, 0), zAngle, yAngle, xAngle);
+			}
+		
 			
 			//Scale
 			c1.setX(c1.getX() * xScale);

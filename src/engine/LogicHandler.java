@@ -3,9 +3,14 @@ package engine;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.event.MouseEvent;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+
+import javax.imageio.ImageIO;
 
 import entities.Axis;
 import entities.Mesh;
@@ -32,6 +37,8 @@ public class LogicHandler {
 	//Temporarily public and in this class
 	public List<Mesh> meshList = new ArrayList<>();
 	
+	private BufferedImage img = null;
+	
 	
 	public LogicHandler(Handler handler) {
 		this.handler = handler;
@@ -49,18 +56,24 @@ public class LogicHandler {
 		meshList.add(teapotMesh);
 		
 		//Plane Mesh
-		Mesh planeMesh = addRectagleMesh(-.5, -.5, 0, 1, 1).getMesh();
+		Mesh planeMesh = addRectagleMesh(-.5, -.5, 0, 1, 1, Color.LIGHT_GRAY).getMesh();
 		planeMesh.setName("Plane");
 		meshList.add(planeMesh);
 		
 		//Cube Mesh
-		Mesh theCubeMesh = addCubeMesh(-.5, -.5, -.5, 1,1,1).getMesh();
+		Mesh theCubeMesh = addCubeMesh(-.5, -.5, -.5, 1,1,1, Color.LIGHT_GRAY).getMesh();
 		theCubeMesh.setName("Cube");
 		meshList.add(theCubeMesh);
 		
 		//Circle mesh
 		
 		//Cylinder mesh
+		try {
+			img = ImageIO.read(new File("./res/Sprites.png"));
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		
 	}
 	
@@ -103,6 +116,34 @@ public class LogicHandler {
 			}
 			
 		}
+		
+		if (img != null) {
+			drawImage(img, renderer, theCamera);
+		}
+		
+	}
+	
+	/**
+	 * Need to scale image when it is bigger than original, use nearest neighbor?
+	 * 
+	 * @param theImage
+	 * @param renderer
+	 * @param cam
+	 */
+	private void drawImage(BufferedImage theImage, RenderHandler renderer, Camera cam) {
+		
+		int theZ = 100;
+
+		for (int i = 0; i < img.getWidth(); i++) {
+			for (int j = 0; j < img.getHeight(); j++) {
+				Coordinate c1 = new Coordinate(i, j, theZ);
+				
+				c1 = Calculator.rotateAroundCamera(c1, cam);
+				
+				renderer.setScreenColor3D((int)c1.getX(), (int)c1.getY(), (int)c1.getZ(), new Color (img.getRGB(i, j)) );
+			}
+		}
+	
 	}
 	
 	
@@ -263,23 +304,23 @@ public class LogicHandler {
 		for (int i = 0; i < 10; i++) {//Lags at 50x50
 			for (int j = 0; j < 10; j++) {
 				if (flag) {
-					theFloor.add(addRectagleMesh(i*height, j* width, 0, height, width)); // new Color(60, 60, 60)
+					theFloor.add(addRectagleMesh(i*height, j* width, 0, height, width, new Color(60, 60, 60)));
 				} else {
-					theFloor.add(addRectagleMesh(i*height, j* width, 0, height, width));// new Color(37, 37, 37)
+					theFloor.add(addRectagleMesh(i*height, j* width, 0, height, width, new Color(37, 37, 37)));
 				}
 				flag = !flag;
 			}
 			flag = !flag;
 		}
 		
-		addCubeMesh(0, 0, 0, 50, 50, 50);
+		addCubeMesh(0, 0, 0, 50, 50, 50, Color.LIGHT_GRAY);
 		//Load mesh from file
 		//objectList.add( new Object3D(MeshLoader.loadMesh()));
 		addManMesh();
 	}
 	
 	private Object3D addCubeMesh(double x, double y, double z,
-			double width, double depth, double height) {
+			double width, double depth, double height, Color theColor) {
 		List<Coordinate> coords = new ArrayList<>();
 		List<Integer> indices = new ArrayList<>();
 				
@@ -306,11 +347,11 @@ public class LogicHandler {
 		Collections.addAll(indices, new Integer[]{4,7,6});
 		Collections.addAll(indices, new Integer[]{4,6,5});
 		Mesh theMesh = new Mesh(coords, indices);
-		return new Object3D(theMesh);
+		return new Object3D(theMesh, theColor);
 		//objectList.add(new Object3D(theMesh));
 	}
 	
-	private Object3D addRectagleMesh(double x, double y, double z, double width, double height) {		
+	private Object3D addRectagleMesh(double x, double y, double z, double width, double height, Color theColor) {		
 		List<Coordinate> coords = new ArrayList<>();
 		List<Integer> indices = new ArrayList<>();
 		
@@ -322,7 +363,7 @@ public class LogicHandler {
 		Collections.addAll(indices, new Integer[]{0, 1, 2});
 		Collections.addAll(indices, new Integer[]{0, 3, 2});	
 		
-		return new Object3D( new Mesh(coords, indices));
+		return new Object3D( new Mesh(coords, indices), theColor);
 		
 		//objectList.add(new Object3D( new Mesh(coords, indices))); 
 	}
@@ -330,42 +371,42 @@ public class LogicHandler {
 	private void addManMesh() {
 		Color woodColor = new Color(242, 194, 146);
 		//Use color and Object3D
-		objectList.add(addCubeMesh(-10,-10, 450, 80, 80, 50)); // cranium
-		objectList.add(addCubeMesh(-10, -10, 425, 80, 80, 25)); // mandible
-		objectList.add(addCubeMesh(0, 0, 400, 50, 50, 25)); // neck
+		objectList.add(addCubeMesh(-10,-10, 450, 80, 80, 50, woodColor)); // cranium
+		objectList.add(addCubeMesh(-10, -10, 425, 80, 80, 25, woodColor)); // mandible
+		objectList.add(addCubeMesh(0, 0, 400, 50, 50, 25, woodColor)); // neck
 		
-		objectList.add(addCubeMesh(-25 + 4, -10 + 4, 300, 100 - 4, 80 - 4, 100)); // chest
-		objectList.add(addCubeMesh(-25 + 4, -10 + 4, 250, 100 - 4, 80 - 4, 50)); // waist
-		objectList.add(addCubeMesh(-25 + 4, -10 + 4, 200, 100 - 4, 80 - 4, 50)); // hip
+		objectList.add(addCubeMesh(-25 + 4, -10 + 4, 300, 100 - 4, 80 - 4, 100, woodColor)); // chest
+		objectList.add(addCubeMesh(-25 + 4, -10 + 4, 250, 100 - 4, 80 - 4, 50, woodColor)); // waist
+		objectList.add(addCubeMesh(-25 + 4, -10 + 4, 200, 100 - 4, 80 - 4, 50, woodColor)); // hip
 		
-		objectList.add(addCubeMesh(-75 + 4, 0, 375, 50, 50, 25)); // lShoulder
-		objectList.add(addCubeMesh(-75, 0, 300, 50, 50, 75)); // lUpperArm
-		objectList.add(addCubeMesh(-75 + 4, 4, 275, 42, 24, 25)); // lElbow
-		objectList.add(addCubeMesh(-75, 0, 200, 50, 50, 75)); // lForearm
-		objectList.add(	addCubeMesh(-75 + 4, 4, 175, 42, 42, 25)); // lWrist
-		objectList.add(addCubeMesh(-75, 0, 150, 50, 50, 25)); // lHand
+		objectList.add(addCubeMesh(-75 + 4, 0, 375, 50, 50, 25, woodColor)); // lShoulder
+		objectList.add(addCubeMesh(-75, 0, 300, 50, 50, 75, woodColor)); // lUpperArm
+		objectList.add(addCubeMesh(-75 + 4, 4, 275, 42, 42, 25, woodColor)); // lElbow
+		objectList.add(addCubeMesh(-75, 0, 200, 50, 50, 75, woodColor)); // lForearm
+		objectList.add(	addCubeMesh(-75 + 4, 4, 175, 42, 42, 25, woodColor)); // lWrist
+		objectList.add(addCubeMesh(-75, 0, 150, 50, 50, 25, woodColor)); // lHand
 		//fingers
 		
-		objectList.add(addCubeMesh(75 - 4, 0, 375, 50, 50, 25)); // rShoulder
-		objectList.add(addCubeMesh(75, 0, 300, 50, 50, 75)); // rUpperArm
-		objectList.add(addCubeMesh(75 + 4, 4, 275, 42, 42, 25)); // rElbow
-		objectList.add(addCubeMesh(75, 0, 200, 50, 50, 75)); // rForearm
-		objectList.add(addCubeMesh(75 + 4, 4, 175, 42, 42, 25));  // rWrist
-		objectList.add(addCubeMesh(75, 0, 150, 50, 50, 25)); // rHand
+		objectList.add(addCubeMesh(75 - 4, 0, 375, 50, 50, 25, woodColor)); // rShoulder
+		objectList.add(addCubeMesh(75, 0, 300, 50, 50, 75, woodColor)); // rUpperArm
+		objectList.add(addCubeMesh(75 + 4, 4, 275, 42, 42, 25, woodColor)); // rElbow
+		objectList.add(addCubeMesh(75, 0, 200, 50, 50, 75, woodColor)); // rForearm
+		objectList.add(addCubeMesh(75 + 4, 4, 175, 42, 42, 25, woodColor));  // rWrist
+		objectList.add(addCubeMesh(75, 0, 150, 50, 50, 25, woodColor)); // rHand
 		//fingers
 		
-		objectList.add(addCubeMesh(-25, 0, 125, 50, 50, 75)); // lQuad
-		objectList.add(addCubeMesh(-25 + 4, 4, 100, 50 - 4, 50 - 4, 25)); // lKnee
-		objectList.add(addCubeMesh(-25, 0, 25, 50, 50, 75)); // lShin
-		objectList.add(addCubeMesh(-25, 0, 0, 50, 50, 25)); // lAnkle
-		objectList.add(addCubeMesh(-25, 25, 0, 50, 75, 25)); // lFoot
+		objectList.add(addCubeMesh(-25, 0, 125, 50, 50, 75, woodColor)); // lQuad
+		objectList.add(addCubeMesh(-25 + 4, 4, 100, 50 - 4, 50 - 4, 25, woodColor)); // lKnee
+		objectList.add(addCubeMesh(-25, 0, 25, 50, 50, 75, woodColor)); // lShin
+		objectList.add(addCubeMesh(-25, 0, 0, 50, 50, 25, woodColor)); // lAnkle
+		objectList.add(addCubeMesh(-25, 25, 0, 50, 75, 25, woodColor)); // lFoot
 		//toes, hip joint
 		
-		objectList.add(addCubeMesh(25, 0, 125, 50, 50, 75)); //rQuad
-		objectList.add(addCubeMesh(25 + 4, 4, 100, 50 - 4, 50 - 4, 25)); // rKnee
-		objectList.add(addCubeMesh(25, 0, 25, 50, 50, 75)); // rShin
-		objectList.add(addCubeMesh(25, 0, 0, 50, 50, 25)); // rAnkle
-		objectList.add(addCubeMesh(25, 0 + 25, 0, 50, 75, 25)); // rFoot
+		objectList.add(addCubeMesh(25, 0, 125, 50, 50, 75, woodColor)); //rQuad
+		objectList.add(addCubeMesh(25 + 4, 4, 100, 50 - 4, 50 - 4, 25, woodColor)); // rKnee
+		objectList.add(addCubeMesh(25, 0, 25, 50, 50, 75, woodColor)); // rShin
+		objectList.add(addCubeMesh(25, 0, 0, 50, 50, 25, woodColor)); // rAnkle
+		objectList.add(addCubeMesh(25, 0 + 25, 0, 50, 75, 25, woodColor)); // rFoot
 		//toes, hip joint
 	}
 	

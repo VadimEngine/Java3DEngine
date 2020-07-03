@@ -123,10 +123,13 @@ public class SideGUI extends JPanel {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
 				Camera cam = (Camera) cameraDropDown.getSelectedValue();
-				handler.getLogicHandler().setCamera(cam);
-				angleSlider1.setValue((int)cam.getXYAngle());
-				angleSlider2.setValue((int)cam.getZYAngle());
-				angleSlider3.setValue((int)cam.getXZAngle());
+				if (cam != null) {
+					handler.getLogicHandler().setCamera(cam);
+					angleSlider1.setValue((int)cam.getXYAngle());
+					angleSlider2.setValue((int)cam.getZYAngle());
+					angleSlider3.setValue((int)cam.getXZAngle());
+				}
+
 			}
 		});
 		
@@ -134,7 +137,9 @@ public class SideGUI extends JPanel {
 		
 		forwardButton.addActionListener(e -> {
 			Camera cam = (Camera) cameraDropDown.getSelectedValue();
-			cam.moveForward();
+			if (cam != null) {
+				cam.moveForward();				
+			}
 
 		});
 		
