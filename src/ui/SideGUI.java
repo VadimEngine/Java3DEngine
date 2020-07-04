@@ -1,4 +1,4 @@
-package engine;
+package ui;
 import java.awt.Color;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -7,20 +7,19 @@ import javax.swing.BoxLayout;
 import javax.swing.DefaultListModel;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
-import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JList;
-import javax.swing.JMenu;
-import javax.swing.JMenuBar;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JSlider;
 import javax.swing.JTextField;
 import javax.swing.ListSelectionModel;
-import javax.swing.SwingUtilities;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 
+import engine.Camera;
+import engine.Coordinate;
+import engine.Handler;
 import entities.Mesh;
 import entities.Object3D;
 
@@ -102,6 +101,7 @@ public class SideGUI extends JPanel {
 		JPanel buttonPanel = new JPanel();
 		
 		JCheckBox toggleFloor = new JCheckBox("View floor", true);
+		toggleFloor.setFocusable(false);
 		toggleFloor.addActionListener(e -> {
 			handler.getLogicHandler().setFloorDisplay(toggleFloor.isSelected());
 		});

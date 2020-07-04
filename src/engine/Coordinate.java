@@ -54,5 +54,10 @@ public class Coordinate {
 	public String toString() {
 		return "[" + x + ", " + y + ", " + z + "]";
 	}
+	
+	@Override
+	public Coordinate clone() {
+		return new Coordinate(x, y, z);
+	}
 
 }

@@ -1,12 +1,12 @@
 # Java3DEngine
 
-A custom 3D game rendering engine built using Java AWT (Abstract Window Toolkit) and Swing. All 3D logic is built from scratch. Each rendered object is rendered with triangles which are made up of vertices and indices. The renderer will iterate the indices in groups of tree and draw a triangle from the vertices of those indices. The vertices-indices reduces the memory of 3D objects.
+A custom 3D game rendering engine built using Java AWT (Abstract Window Toolkit) and Swing. All 3D logic is built from scratch. Each rendered object is rendered with triangles which are made up of vertices and indices. The renderer will iterate the indices in groups of three and draw a triangle from the vertices of those indices. The vertices-indices reduces the memory of 3D objects.
 
 Each triangle is draw onto a buffered image by splitting a triangle into a flat bottom and flat and horizontal lines are drawn to fill triangle with Bresenham's line algorithm. The lines are drawn onto a buffered image by setting each pixel with a x, y and z coordinate. A z-Buffer array stores the z coordinate of the last drawn pixel and a pixel will only be drawn if its z coordinate is smaller than the last drawn pixel and larger than and equal to 0. The position of the triangle is determined by the camera and the object that holds the vertices and indices. The position of the triangle is translated, rotated and scales by the containing object and then translated and rotated by the camera with rotational matrices.
 
 3D objects can be loaded from a .obj file of vertices and indices. As seen from the teapot which was loaded from a file.
 
-![Screen](./Screenshots/View5.png)
+![Screen](./Screenshots/View7.png)
 
 The camera can moved and adjusted with the keyboard and mouse. The camera moves in the direction its facing with the "W" key, back with the "S" key, Left with the "A" Key and right with the "D" Key. The camera can rotate left and right with the left and right arrow keys. It ran face up and down with the l
 
@@ -34,8 +34,8 @@ The JPanel on the right allows managing the cameras, objects and adding new obje
 The user can hover their cursor over objects which will be colored yellow and the blue when clicked and selected. Users can also select an object with the JList and edit the object's position, rotation and scale with the JTextFields.
 
 
-![Screen](./Screenshots/View4.png)
+![Screen](./Screenshots/View8.png)
 
 Users can add objects into the environment by selecting from the Mesh JList and clicking the add button.
 
-![Screen1](./Screenshots/View6.png)
+![Screen1](./Screenshots/View9.png)

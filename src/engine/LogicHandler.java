@@ -4,19 +4,18 @@ import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
-import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import javax.imageio.ImageIO;
-
 import entities.Axis;
 import entities.Mesh;
 import entities.Object3D;
+import entities.Texture;
 
 public class LogicHandler {
+	
+	private static int scale = 1;
 	
 	private Camera theCamera;
 	private List<Camera> cameraList;
@@ -37,7 +36,8 @@ public class LogicHandler {
 	//Temporarily public and in this class
 	public List<Mesh> meshList = new ArrayList<>();
 	
-	private BufferedImage img = null;
+	
+	private Texture theTexture = new Texture();
 	
 	
 	public LogicHandler(Handler handler) {
@@ -68,12 +68,7 @@ public class LogicHandler {
 		//Circle mesh
 		
 		//Cylinder mesh
-		try {
-			img = ImageIO.read(new File("./res/Sprites.png"));
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		
 		
 	}
 	
@@ -116,12 +111,98 @@ public class LogicHandler {
 			}
 			
 		}
+				
+		//drawTexture(theTexture, renderer, theCamera);
 		
-		if (img != null) {
-			drawImage(img, renderer, theCamera);
+		scale = ((scale + 1) % 500);
+		
+		double width = scale;
+		double height = scale;
+		
+		Coordinate c1 = new Coordinate(0, 0, 0);
+		Coordinate c2 = new Coordinate(width, height, 0);
+		Coordinate c3 = new Coordinate(0, height, 0);
+		
+		//drawTextureTriangle(c1, c2, c3, theTexture, renderer, theCamera);
+	}
+	
+	
+
+	
+	public BufferedImage resizeImage(BufferedImage src, int width, int height) {
+		//check that width and height are > 0 and not too large
+		
+		BufferedImage localImage = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
+		
+		int x, y;
+	    int ww = src.getWidth();
+	    int hh = src.getHeight();
+	    int[] ys = new int[height];
+	    
+	    for (y = 0; y < height; y++) {
+	        ys[y] = y * hh / height;
+	    }
+	    
+	    for (x = 0; x < width; x++) {
+	        int newX = x * ww / width;
+	        for (y = 0; y < height; y++) {
+	            int col = src.getRGB(newX, ys[y]);
+	            localImage.setRGB(x, y, col);
+	        }
+	    }
+	    
+	    return localImage;
+	}
+	
+	private void drawTexture(Texture theTex, RenderHandler renderer, Camera cam) {
+		int theZ = 10;
+		
+		//BufferedImage localImage = theTex.getImage();
+		
+		
+		for (int i = 0; i < theTex.getWidth(); i++) {
+			for (int j = 0; j < theTex.getHeight(); j++) {
+				Coordinate c1 = new Coordinate(i, j, theZ);
+				
+				//c1 = Calculator.rotateAroundCamera(c1, cam);
+				
+				double normalX = ((double)i) / ((double)theTex.getWidth());
+				double normalY = (double)(j) / ((double)theTex.getHeight());
+				
+				Color theColor = theTex.getColor(normalX, normalY);
+				
+				renderer.setScreenColor3D((int)c1.getX(), (int)c1.getY(), (int)c1.getZ(), theColor );
+			}
 		}
 		
 	}
+	
+	
+	private void drawTextureTriangle(Coordinate c1, Coordinate c2, Coordinate c3,
+			Texture theTex, RenderHandler renderer, Camera cam) {
+		
+		//assume right triangle for now with c1 on top and c2 bottom right
+		
+		double theWidth = c2.getX() - c3.getX();
+		double theHeight = c3.getY() - c1.getY();
+		
+		double slope = (c2.getY() - c1.getY()) / (c2.getX() - c1.getX());
+		
+		for (int h = (int) c1.getY(); h <= c3.getY(); h++ ) {
+			for (int w = (int) c1.getX(); w <= h * slope; w++) {
+				//draw pixel at (h, w)
+				double normalW = (double)w / theWidth;
+				double normalH = (double)h / theHeight;
+				
+				Color theColor = theTex.getColor(normalW, normalH);
+				renderer.setScreenColor3D(w, h, 100, theColor);
+			}
+		}
+		
+		
+		
+	}
+	
 	
 	/**
 	 * Need to scale image when it is bigger than original, use nearest neighbor?
@@ -132,15 +213,78 @@ public class LogicHandler {
 	 */
 	private void drawImage(BufferedImage theImage, RenderHandler renderer, Camera cam) {
 		
-		int theZ = 100;
+		int theZ = 10;
+		
+		//System.out.println("Image width: " + theImage.getWidth());
+		//System.out.println("Image height: " + theImage.getHeight());
+		
+		
+	    Coordinate topLeft = new Coordinate(0, 0, theZ);
+	    Coordinate topRight  = new Coordinate(theImage.getWidth(), 0, theZ);
+	    
+	    Coordinate BottomLeft = new Coordinate(0, theImage.getHeight(), theZ);
+	    //Coordinate BottomRight  = new Coordinate(theImage.getWidth(), theImage.getHeight(), theZ);
+		
+	    
+	    int oldWidth = (int) Calculator.distance(topLeft, topRight);
+	    int oldHeight = (int) Calculator.distance(topLeft, BottomLeft);
+	    
+	    System.out.println("Old:Width:Height: " + oldWidth + ", " + oldHeight);
+	    
+	    
+	    topLeft = Calculator.rotateAroundCamera(topLeft, cam);
+	    topRight = Calculator.rotateAroundCamera(topLeft, cam);
+	    BottomLeft = Calculator.rotateAroundCamera(topLeft, cam);
+	    
+	    topLeft.setZ(0);
+	    topRight.setZ(0);
+	    BottomLeft.setZ(0);
+	    
+	    //BottomRight = Calculator.rotateAroundCamera(topLeft, cam);
+	    
+	    
+	    int newWidth = (int) Calculator.distance(topLeft, topRight);
+	    int newHeight = (int) Calculator.distance(topLeft, BottomLeft);
+	    
+	    System.out.println("New:Width:Height: " + newWidth + ", " + newHeight);
+	    
 
-		for (int i = 0; i < img.getWidth(); i++) {
-			for (int j = 0; j < img.getHeight(); j++) {
+		//int h =16;
+		//int w = 16;
+		
+		int h =newWidth;
+		int w = newHeight;
+		
+		if (h > 0 && h <= 2000 && w > 0 && w <= 2000) {
+			
+		} else {
+			return;
+		}
+		
+		
+		BufferedImage localImage = new BufferedImage(w, h, BufferedImage.TYPE_INT_RGB);
+		
+		int x, y;
+	    int ww = theImage.getWidth();
+	    int hh = theImage.getHeight();
+	    int[] ys = new int[h];
+	    for (y = 0; y < h; y++)
+	        ys[y] = y * hh / h;
+	    for (x = 0; x < w; x++) {
+	        int newX = x * ww / w;
+	        for (y = 0; y < h; y++) {
+	            int col = theImage.getRGB(newX, ys[y]);
+	            localImage.setRGB(x, y, col);
+	        }
+	    }
+		
+		for (int i = 0; i < localImage.getWidth(); i++) {
+			for (int j = 0; j < localImage.getHeight(); j++) {
 				Coordinate c1 = new Coordinate(i, j, theZ);
 				
 				c1 = Calculator.rotateAroundCamera(c1, cam);
 				
-				renderer.setScreenColor3D((int)c1.getX(), (int)c1.getY(), (int)c1.getZ(), new Color (img.getRGB(i, j)) );
+				renderer.setScreenColor3D((int)c1.getX(), (int)c1.getY(), (int)c1.getZ(), new Color (localImage.getRGB(i, j)) );
 			}
 		}
 	
@@ -202,7 +346,7 @@ public class LogicHandler {
 				c2 = Calculator.rotateAroundCamera(c2, theCamera);
 				c3 = Calculator.rotateAroundCamera(c3, theCamera);
 					
-				double theZ = Calculator.zOnPlane2(c1, c2, c3, xPos, yPos);
+				double theZ = Calculator.zOnPlane(c1, c2, c3, xPos, yPos);
 				
 				// closer z value and mouse inbound
 				if (theZ <= z && theZ >=0 && Calculator.xyInbound(c1, c2, c3, xPos, yPos)) {
@@ -301,8 +445,8 @@ public class LogicHandler {
 		final int width = 100;
 		
 		boolean flag = true;
-		for (int i = 0; i < 10; i++) {//Lags at 50x50
-			for (int j = 0; j < 10; j++) {
+		for (int i = 0; i < 16; i++) {//Lags at 50x50
+			for (int j = 0; j < 16; j++) {
 				if (flag) {
 					theFloor.add(addRectagleMesh(i*height, j* width, 0, height, width, new Color(60, 60, 60)));
 				} else {
