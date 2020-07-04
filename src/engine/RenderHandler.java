@@ -33,7 +33,6 @@ public class RenderHandler {
 			
 	
 	/**
-	 * 
 	 * x_start = math.max(left.x, 0) and x_end = math.min(rigth.x, screen.width) (same with y)
 	 * 
 	 * 
@@ -349,10 +348,6 @@ public class RenderHandler {
 			}
 		}
 	}
-	
-	
-
-	
 	
 	
 	/**

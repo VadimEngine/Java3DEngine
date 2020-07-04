@@ -123,13 +123,11 @@ public class LogicHandler {
 		Coordinate c2 = new Coordinate(width, height, 0);
 		Coordinate c3 = new Coordinate(0, height, 0);
 		
-		drawTextureTriangle(c1, c2, c3, theTexture, renderer, theCamera);
-		
+		//drawTextureTriangle(c1, c2, c3, theTexture, renderer, theCamera);
 	}
 	
 	
 
-	
 	
 	public BufferedImage resizeImage(BufferedImage src, int width, int height) {
 		//check that width and height are > 0 and not too large
