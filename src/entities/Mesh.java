@@ -5,7 +5,10 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import engine.Calculator;
+import engine.Camera;
 import engine.Coordinate;
+import engine.RenderHandler;
 
 /**
  * 
@@ -37,6 +40,21 @@ public class Mesh {
 	
 	public Mesh(List<Coordinate> vertices, List<Integer> indices) {
 		this(vertices, indices, Color.DARK_GRAY);
+	}
+	
+	public void render(RenderHandler renderer, Camera cam) {
+
+		for (int i = 0; i < indices.size(); i+=3) {
+			Coordinate c1 = vertices.get(indices.get(i)).clone();
+			Coordinate c2 = vertices.get(indices.get(i + 1)).clone();
+			Coordinate c3 = vertices.get(indices.get(i + 2)).clone();
+			
+			c1 = Calculator.rotateAroundCamera(c1, cam);
+			c2 = Calculator.rotateAroundCamera(c2, cam);
+			c3 = Calculator.rotateAroundCamera(c3, cam);
+			
+			renderer.drawTriangleScanLineOp(c1, c2, c3, color);
+		}
 	}
 	
 	

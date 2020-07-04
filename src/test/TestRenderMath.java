@@ -4,6 +4,9 @@ import engine.Calculator;
 import engine.Camera;
 import engine.Coordinate;
 import org.junit.Test;
+
+import static org.junit.Assert.assertTrue;
+
 import org.junit.Assert;
 
 /**
@@ -95,7 +98,7 @@ public class TestRenderMath {
 		double y = 0;
 		
 		
-		double z = Calculator.zOnPlane2(c1, c2, c3,  x,  y);
+		double z = Calculator.zOnPlane(c1, c2, c3,  x,  y);
 		//z should be ~708
 	}
 
@@ -113,12 +116,21 @@ public class TestRenderMath {
 		boolean inbound = Calculator.xyInbound(c1, c2, c3, x, y);
 		
 		System.out.println(inbound);
-		
-		
-		
-		
 	}
-
-
+	
+	@Test
+	public void testTexture() {	
+		for (float x = -10; x < 10; x += .01) {
+			//double x = 1;
+			int width = 640;
+			
+			int calcX = (int) ((width*x) % width);
+			int calcX2 = (int) Math.floorMod((int) (width*x), width);
+			assertTrue("return OOB value" + x + ": " + width, calcX2 >= 0 && calcX2 <= width);
+			
+			//System.out.println("Mod: " + x + ": " + calcX2 );
+			
+		}
+	}
 
 }

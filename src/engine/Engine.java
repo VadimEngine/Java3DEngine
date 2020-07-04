@@ -9,6 +9,8 @@ import java.awt.image.BufferStrategy;
 
 import javax.swing.JPanel;
 
+import ui.SideGUI;
+
 /**
  * Engine class that runs the the engine class in a thread which repeatedly calls tick() and render() 60 times a second.
  * 

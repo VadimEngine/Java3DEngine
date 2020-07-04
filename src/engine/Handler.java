@@ -11,6 +11,7 @@ import java.awt.event.MouseWheelListener;
 import javax.swing.SwingUtilities;
 
 import entities.Object3D;
+import ui.SideGUI;
 
 /**
  * Key and mouse Listener. Saves the keys that are pressed in a boolean array and also saves the mouse Mouse position
@@ -47,8 +48,8 @@ public class Handler implements KeyListener, MouseListener, MouseMotionListener,
 		logicHandler = new LogicHandler(this);
 		
 		
-		logicHandler.addCamera(new Camera());
-		logicHandler.addCamera(new Camera());
+		//logicHandler.addCamera(new Camera());
+		//logicHandler.addCamera(new Camera());
 	}
 
 	public void tick() {

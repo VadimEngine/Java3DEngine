@@ -106,23 +106,10 @@ public class Calculator {
 	}
 	
 	//methods to generate rotational matrices
-	
-	public static double zOnPlane(Coordinate c1, Coordinate c2, Coordinate c3, double xPos, double yPos) {
-		double x1 = c1.getX(), y1 = c1.getY(), z1 = c1.getZ();
-		double x2 = c2.getX(), y2 = c2.getY(), z2 = c2.getZ();
-		double x3 = c3.getX(), y3 = c3.getY(), z3 = c3.getZ();
 		
-		double a =  y1*(z2-z3) + y2*(z3-z1) + y3*(z1-z2);
-		double b =  z1*(x2-x3) + z2*(x3-x1) + z3*(x1-x2);
-		double c =  x1*(y2-y3) + x2*(y3-y1) + x3*(y1-y2);
-		double d = -x1*((y2*z3)-(y3*z2)) - x2*((y3*z1)-(y1*z3)) - x3*((y1*z2)-(y2*z1));
-
-        return (d-(a*xPos)-(b*yPos))/c;
-	}
 	
 	
-	
-	public static double zOnPlane2(Coordinate c1, Coordinate c2, Coordinate c3, double x, double y) {
+	public static double zOnPlane(Coordinate c1, Coordinate c2, Coordinate c3, double x, double y) {
 		double ax = c1.getX() - c2.getX();
 		double ay = c1.getY() - c2.getY();
 		double az = c1.getZ() - c2.getZ();
@@ -142,6 +129,14 @@ public class Calculator {
 		double z = ( (tempx) + (tempy) - (tempz)) / (-nz);
 		
 		return z;
+	}
+	
+	public static double distance(Coordinate c1, Coordinate c2) {	
+		double xs = c2.getX() - c1.getX();
+		double ys = c2.getY() - c1.getY();
+		double zs = c2.getZ() - c1.getZ();
+		
+		return Math.sqrt((xs* xs) +  (ys * ys) + (zs*zs));
 	}
 	
 	
@@ -169,6 +164,24 @@ public class Calculator {
 
         return !(has_neg && has_pos);    
 	}
+	
+	
+	public static double getZatY(Coordinate c1, Coordinate c2, double theY) {
+		double vz = c1.getZ() - c2.getZ();
+    	double vy = c1.getY() - c2.getY();
+    	double theZ = (c1.getZ() + vz * (theY - c1.getY())/vy);
+    	
+		return theZ;
+	}
+	
+	public static double getZatX(Coordinate c1, Coordinate c2, double theX) {
+    	double vz = c1.getZ() - c2.getZ();
+    	double vx = c1.getX() - c2.getX();
+    	double theZ = (c1.getZ() + vz * (theX - c1.getX())/vx); 
+    	
+    	return theZ;
+	}
+	
 
 	
 	private static double[] matrixMult(double[] m1, double[][] m2) {

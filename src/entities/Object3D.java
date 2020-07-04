@@ -56,12 +56,12 @@ public class Object3D {
 		//xAngle = tempCount++;
 		
 		for (int i = 0; i < indicies.size(); i+=3) {
-			Coordinate c1 = theMesh.getCoordinate(indicies.get(i));
-			Coordinate c2 = theMesh.getCoordinate(indicies.get(i + 1));
-			Coordinate c3 = theMesh.getCoordinate(indicies.get(i + 2));
+			Coordinate c1 = theMesh.getCoordinate(indicies.get(i)).clone();
+			Coordinate c2 = theMesh.getCoordinate(indicies.get(i + 1)).clone();
+			Coordinate c3 = theMesh.getCoordinate(indicies.get(i + 2)).clone();
 			
 			//rotate around mesh center (0,0,0)
-			if (zAngle != 0 && yAngle != 0 && xAngle != 0) {
+			if (zAngle != 0 || yAngle != 0 || xAngle != 0) {
 				c1 = Calculator.rotateAroundCenter(c1, new Coordinate(0, 0, 0), zAngle, yAngle, xAngle);
 				c2 = Calculator.rotateAroundCenter(c2, new Coordinate(0, 0, 0), zAngle, yAngle, xAngle);
 				c3 = Calculator.rotateAroundCenter(c3, new Coordinate(0, 0, 0), zAngle, yAngle, xAngle);
@@ -82,6 +82,7 @@ public class Object3D {
 			c3.setZ(c3.getZ() * zScale);
 			
 			//translate
+			
 			c1.addX(center.getX());
 			c1.addY(center.getY());
 			c1.addZ(center.getZ());
@@ -94,6 +95,7 @@ public class Object3D {
 			c3.addY(center.getY());
 			c3.addZ(center.getZ());
 			
+			
 			//rotate around camera
 			c1 = Calculator.rotateAroundCamera(c1, cam);
 			c2 = Calculator.rotateAroundCamera(c2, cam);
@@ -102,7 +104,7 @@ public class Object3D {
 			//translate by camera
 			//Set perspective
 								
-			renderer.drawTriangleScanLine(c1, c2, c3, theColor);
+			renderer.drawTriangleScanLineOp(c1, c2, c3, theColor);
 			renderer.drawLine3D(c1, c2, Color.BLACK);
 			renderer.drawLine3D(c2, c3, Color.BLACK);
 			renderer.drawLine3D(c3, c1, Color.BLACK);

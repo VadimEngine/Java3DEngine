@@ -2,66 +2,18 @@ package engine;
 
 import java.awt.Color;
 import java.awt.Graphics;
-import java.util.List;
-
-import entities.Mesh;
-import entities.Triangle;
 
 public class RenderHandler {
 	
 	private Screen theScreen;
 	
-	
-	
-	private int x = 200;
-	private int y = 200;
-	
-	private int count = 640;
-	private int increment = 1;
-	
-	
+		
 	public RenderHandler(Screen theScreen) {
 		this.theScreen = theScreen;
 	}
 	
 	
-	public void render(Graphics g) {
-		
-		count += increment;
-		if (count > 640 || count < 0) {
-			increment *= -1;
-		}
-		
-		/*
-		double rad = 100;
-		//x = (this.x + 1) % 640;
-		//y = (this.y + 1) % 640;
-		
-		int n = 100;
-		
-		
-		count = (count + 1) % n;
-		
-		Coordinate center = new Coordinate(x , y , 0);
-		
-		for (int i = 0; i < n && i < count; i++) {
-			double x2 = x + Math.cos(2 * Math.PI / n * i) * rad;
-			double y2 = y + Math.sin((2 * Math.PI / n) * i) * rad;
-			Coordinate c2 = new Coordinate(x2, y2, 0);
-			
-			drawLine3D(c2, center, Color.YELLOW);
-			
-			//drawLine3DCustom(c2, center, Color.YELLOW);
-			//drawLine3DCustom(center, c2, Color.BLUE);
-		}
-		
-		
-		drawLine3DCustom(new Coordinate(0, 0, 0), 
-						new Coordinate(640, 640, 0),
-						Color.BLUE);
-		
-		*/
-		
+	public void render(Graphics g) {		
 		//draw the screen
 		theScreen.render(g);
 		//rest screen
@@ -69,27 +21,6 @@ public class RenderHandler {
 	}
 	
 
-	
-	private double sign(Coordinate c1, Coordinate c2, Coordinate c3) {
-		return (c1.getX() - c3.getX()) * (c2.getY() - c3.getY()) - (c2.getX() - c3.getX()) * (c1.getY() - c3.getY());
-	}
-	
-	
-	private boolean inbound(final Coordinate theCoord, final Coordinate c1, final Coordinate c2, final Coordinate c3) {
-		double d1, d2, d3;
-		boolean has_neg, has_pos;
-
-		d1 = sign(theCoord, c1, c2);
-		d2 = sign(theCoord, c2, c3);
-		d3 = sign(theCoord, c3, c1);
-
-		has_neg = (d1 < 0) || (d2 < 0) || (d3 < 0);
-		has_pos = (d1 > 0) || (d2 > 0) || (d3 > 0);
-
-		return !(has_neg && has_pos);
-	}
-	
-	
 	
 	public void setScreenColor(int xPos, int yPos, Color color) {
 		theScreen.setScreenColor(xPos, yPos, color);
@@ -99,171 +30,7 @@ public class RenderHandler {
 	public void setScreenColor3D(int xPos, int yPos, int zPos, Color color) {
 		theScreen.setScreenColor3D(xPos, yPos, zPos, color);
 	}
-	
-	
-	
-	/**
-	 * Used to avoid drawing too large shapes
-	 *
-	 * @param c1
-	 * @return
-	 */
-	private boolean coordInbond(Coordinate c1) {
-		if (c1.getX() >= -1000 && c1.getX() <= 1000 && c1.getY() >= -1000 && c1.getY() <= 1000) {
-			return true;
-		} else {
-			return false;
-		}
-	}
-	
-	public void renderTriangle(Triangle triangle, Camera cam) {
-		renderTriangle(triangle, cam, triangle.getColor());
-	}
-	
-	public void renderTriangle(Triangle triangle, Camera cam, Color color) {
-		Coordinate[] coords = triangle.getCoordinate();
-		
-		Coordinate c1 = Calculator.rotateAroundCamera(coords[0], cam);
-		Coordinate c2 = Calculator.rotateAroundCamera(coords[1], cam);
-		Coordinate c3 = Calculator.rotateAroundCamera(coords[2], cam);
-		
-		//drawTriangle3DCorner(c1, c2, c3, color);
-		drawTriangleScanLine(c1, c2, c3, color);
-		
-		drawLine3D(c1, c2, Color.BLACK);
-		drawLine3D(c2, c3, Color.BLACK);
-		drawLine3D(c3, c1, Color.BLACK);
-		
-		
-	}
-	
-	/**
-	 * Current approach is to draw a line from c3 to all points between c1 and c2. Because these lines are angles, some pixels are skipped
-	 * 
-	 * Better approach would be to only draw horizontal/straight lines. Maybe split the triangle to make drawing easier
-	 * 
-	 * @param c1
-	 * @param c2
-	 * @param c3
-	 * @param color
-	 */
-	public void drawTriangle3D(final Coordinate c1, final Coordinate c2, final Coordinate c3, final Color color) {
-		if (!coordInbond(c1) || !coordInbond(c2) || !coordInbond(c3)) {
-			return;
-		}
-		
-		Coordinate left;
-		Coordinate right;
-		Coordinate top;
-		Coordinate bottom;
-		
-		if (c1.getX() < c2.getX()) {
-			left = c1;
-			right = c2;
-		} else {
-			left = c2;
-			right = c1;
-		}
-		
-		if (c1.getY() < c2.getY()) {
-			top = c1;
-			bottom = c2;
-		} else {
-			top = c2;
-			bottom = c1;
-		}
-		
-		double slope = ( (right.getY() - left.getY()) / (right.getX() - left.getX()) );
-		double iSlope =  ( (top.getX() - bottom.getX()) / (top.getY() - bottom.getY()) );
-		
-		double b = left.getY() - (slope * left.getX());
-		double ib = top.getX() - (iSlope * top.getY());
-		
-		
-		if (slope >= 1 || slope <= -1) {
-			//iterate along y values		
-
 			
-			
-			double vx = top.getX() - bottom.getX();
-			double vy = top.getY() - bottom.getY();
-			double vz = top.getZ() - bottom.getZ();
-			
-			
-			for (int y = (int)top.getY(); y <= bottom.getY(); y++) {
-				int theX = (int)(y * iSlope + ib);//(y-b)/m
-				int theY = y;
-				int theZ = (int)(left.getZ() + vz * (y - left.getY())/vy);
-				
-				drawLine3D(c3, new Coordinate(theX, theY, theZ), color);
-				
-			}
-		} else {
-			//iterate along x values
-			double vx = left.getX() - right.getX();
-			double vy = left.getY() - right.getY();
-			double vz = left.getZ() - right.getZ();
-			
-			
-			for (int x = (int)left.getX(); x <= right.getX(); x++) {
-				int theX = x;
-				int theY = (int)(x * slope + b);
-				//int theZ = (int)(left.getX() + v1x * (x - left.getX())/v1x);
-				int theZ = (int)(left.getZ() + vz * (x - left.getX())/vx);
-				
-				drawLine3D(c3, new Coordinate(theX, theY, theZ), color);
-			}
-		}
-
-	}	
-	
-	
-	
-	public void drawMesh(Mesh theMesh, Camera cam, Color color) {
-		List<Integer> indicies = theMesh.getIndices();
-		
-		for (int i = 0; i < indicies.size(); i+=3) {
-			Coordinate c1 = theMesh.getCoordinate(indicies.get(i));
-			Coordinate c2 = theMesh.getCoordinate(indicies.get(i + 1));
-			Coordinate c3 = theMesh.getCoordinate(indicies.get(i + 2));
-			
-			
-			
-			
-			
-			//rotate around center
-			//c1 = Calculator.rotateAroundCenter(c1, new Coordinate(0,0,0), count, count, count);
-			//c2 = Calculator.rotateAroundCenter(c2, new Coordinate(0,0,0), count, count, count);
-			//c3 = Calculator.rotateAroundCenter(c3, new Coordinate(0,0,0), count, count, count);
-		
-			//translate
-			/*
-			c1.addX(count);
-			c1.addY(count);
-			c1.addZ(count);
-			
-			c2.addX(count);
-			c2.addY(count);
-			c2.addZ(count);
-			
-			c3.addX(count);
-			c3.addY(count);
-			c3.addZ(count);
-			*/
-			
-			//rotate around camera
-			//c1 = Calculator.rotateAroundCamera(c1, cam);
-			//c2 = Calculator.rotateAroundCamera(c2, cam);
-			//c3 = Calculator.rotateAroundCamera(c3, cam);
-						
-			renderTriangle(new Triangle(c1, c2, c3, color), cam);
-			
-			//drawTriangleScanLine(c1, c2, c3, Color.WHITE);
-			//draw(c1, c2, c3, Color.WHITE);
-			//drawTriangle3DCorner(c1, c2, c3, Color.RED);
-		}
-	}
-		
 	
 	/**
 	 * 
@@ -322,9 +89,6 @@ public class RenderHandler {
             	setScreenColor3D(theX, y, theZ, color);
 			}
 		}
-		
-		
-		
 	}
 	
 	
@@ -367,7 +131,7 @@ public class RenderHandler {
  
         if (dx >= dy) {
             while (true) {
-            	double theZ = getZatX(c1, c2, x);
+            	double theZ = Calculator.getZatX(c1, c2, x);
             	setScreenColor3D(x, y, (int)Math.floor(theZ), color);
             	
                 if (x == x2)
@@ -381,7 +145,7 @@ public class RenderHandler {
             }
         } else {
             while (true) {
-            	double theZ = getZatY(c1, c2, y);
+            	double theZ = Calculator.getZatY(c1, c2, y);
             	setScreenColor3D(x, y, (int)Math.floor(theZ), color);
             	
                 if (y == y2)
@@ -473,123 +237,121 @@ public class RenderHandler {
 	}
 	
 	
-	/**
-	 * Used proper double comparison
-	 * 
-	 * 
-	 * http://www.sunshine2k.de/coding/java/TriangleRasterization/TriangleRasterization.html
-	 * @param c1
-	 * @param c2
-	 * @param c3
-	 * @param color
-	 */
-	public void drawTriangleScanLine(Coordinate c1, Coordinate c2, Coordinate c3, Color color) {
-		if (!coordInbond(c1) || !coordInbond(c2) || !coordInbond(c3)) {
+	
+	public void drawTriangleScanLineOp(Coordinate c0, Coordinate c1, Coordinate c2, Color theColor) {
+		if (!coordInbond(c0) || !coordInbond(c1) || !coordInbond(c2)) {
 			return;
 		}
-		Coordinate v1 = c1;
-		Coordinate v2 = c2;
-		Coordinate v3 = c3;	
 		
-		//at first sort the three vertices by y-coordinate ascending so v1 is the topmost vertex		
-		if (v1.getY() > v2.getY()) {
-			Coordinate temp = v1;
-			v1 = v2;
-			v2 = temp;
+		Coordinate pv0 = c0;
+		Coordinate pv1 = c1;
+		Coordinate pv2 = c2;	
+		
+		if( pv1.getY() < pv0.getY() ) {
+			Coordinate temp = pv0;
+			pv0 = pv1;
+			pv1 = temp;
 		}
-		
-		if (v2.getY() > v3.getY()) {
-			//swap c1, c3
-			Coordinate temp = v2;
-			v2 = v3;
-			v3 = temp;
+		if( pv2.getY() < pv1.getY() ) {
+			Coordinate temp = pv1;
+			pv1 = pv2;
+			pv2 = temp;
 		}
-		
-		if (v1.getY() > v2.getY()) {
-			//swap v1, v2
-			Coordinate temp = v1;
-			v1 = v2;
-			v2 = temp;
+		if( pv1.getY() < pv0.getY() ) {
+			Coordinate temp = pv0;
+			pv0 = pv1;
+			pv1 = temp;
 		}
 		
-		// check for trivial case of bottom-flat triangle
-		if (v2.getY() == v3.getY()) {
-			//make v1 one the left?
-			renderTriangleFlatBottom(v1, v2, v3, color);
-		} else if (v1.getY() == v2.getY()) {
-			// check for trivial case of top-flat triangle
-			//make v2 on the left?
-			renderTriangleFlatTop(v1, v2, v3, color);
-		} else {
-			//general case - split the triangle in a topflat and bottom-flat one
-        	double theZ = getZatY(v1, v3, v2.getY());
-			Coordinate v4 = new Coordinate((v1.getX() + ((v2.getY() - v1.getY()) / (v3.getY() - v1.getY())) * (v3.getX() - v1.getX())), v2.getY(), theZ);
-
-			renderTriangleFlatBottom(v1, v2, v4, color);
-			renderTriangleFlatTop(v2, v4, v3, color);
-		}
-		  
-	}
-	
-	/**
-	 * This might not be working as it should... causes weird clipping
-	 * @param c1
-	 * @param c2
-	 * @param c3
-	 * @param color
-	 */
-	private void renderTriangleFlatBottom(Coordinate c1, Coordinate c2, Coordinate c3, Color color) {
-		double invslope1 = (c2.getX() - c1.getX()) / (c2.getY() - c1.getY());
-		double invslope2 = (c3.getX() - c1.getX()) / (c3.getY() - c1.getY());
-
-		double curx1 = c1.getX();
-		double curx2 = c1.getX();
-
-		for (int scanlineY = (int) c1.getY(); scanlineY <= c2.getY(); scanlineY++) {	
-			double theZ1 = getZatY(c2, c1, scanlineY);
-        	double theZ2 = getZatY(c3, c1, scanlineY);
- 
-			drawLine3D( new Coordinate(curx1, scanlineY, theZ1), new Coordinate (curx2, scanlineY, theZ2), color );
-			curx1 += invslope1;
-			curx2 += invslope2;
-		}
-	}
-	
-	private void renderTriangleFlatTop(Coordinate c1, Coordinate c2, Coordinate c3, Color color) {
-		double invslope1 = (c3.getX() - c1.getX()) / (c3.getY() - c1.getY());
-		double invslope2 = (c3.getX() - c2.getX()) / (c3.getY() - c2.getY());
-
-		double curx1 = c3.getX();
-		double curx2 = c3.getX();
-
-		for (int scanlineY = (int) c3.getY(); scanlineY > c1.getY(); scanlineY--) {
-			double theZ1 = getZatY(c1, c3, scanlineY);
-        	double theZ2 = getZatY(c2, c3, scanlineY);
+		if( pv0.getY() == pv1.getY() )  { // natural flat top
 			
-        	drawLine3D( new Coordinate(curx1, scanlineY, theZ1),  new Coordinate (curx2, scanlineY, theZ2), color );
-			curx1 -= invslope1;
-			curx2 -= invslope2;
-		} 
+			// sorting top vertices by x
+			if( pv1.getX() < pv0.getX() ) {
+				Coordinate temp = pv0;
+				pv0 = pv1;
+				pv1 = temp;
+			}
+			drawFlatTopTriangle( pv0, pv1, pv2, theColor);
+		} else if ( pv1.getY() == pv2.getY()) { // natural flat bottom
+			// sorting bottom vertices by x
+			if( pv2.getX() < pv1.getX() ) {
+				Coordinate temp = pv1;
+				pv1 = pv2;
+				pv2 = temp;
+			}
+			drawFlatBottomTriangle( pv0, pv1, pv2, theColor);
+		} else {
+			
+			double alphaSplit = (pv1.getY() - pv0.getY()) /
+								(pv2.getY() - pv0.getY());
+									
+			Coordinate vi = new Coordinate(  pv0.getX() + (pv2.getX() - pv0.getX())  * alphaSplit,
+										     pv0.getY() + (pv2.getY() - pv0.getY())  * alphaSplit,
+										     pv0.getZ() + (pv2.getZ() - pv0.getZ())  * alphaSplit);
+							
+			if( pv1.getX() < vi.getX() ) { // major right
+				drawFlatBottomTriangle( pv0, pv1, vi, theColor );
+				drawFlatTopTriangle( pv1, vi, pv2, theColor );
+			} else { // major left
+				drawFlatBottomTriangle( pv0, vi, pv1, theColor );
+				drawFlatTopTriangle( vi, pv1, pv2, theColor );
+			}
+		}
 	}
 	
-	private double getZatY(Coordinate c1, Coordinate c2, double theY) {
-		double vz = c1.getZ() - c2.getZ();
-    	double vy = c1.getY() - c2.getY();
-    	double theZ = (c1.getZ() + vz * (theY - c1.getY())/vy);
-    	
-		return theZ;
+	
+	private void drawFlatTopTriangle(Coordinate v0, Coordinate v1, Coordinate v2, Color theColor) {
+		final double m0 = (v2.getX() - v0.getX()) / (v2.getY() - v0.getY());
+		final double m1 = (v2.getX() - v1.getX()) / (v2.getY() - v1.getY());
+		
+		// calculate start and end scanlines
+		final int yStart = (int)Math.ceil( v0.getY() - 0.5f );
+		final int yEnd = (int)Math.ceil( v2.getY() - 0.5f ); // the scanline AFTER the last line drawn
+
+		for( int y = yStart; y < yEnd; y++ ) {
+			// calculate start and end points (x-coords)
+			// add 0.5 to y value because we're calculating based on pixel CENTERS
+			final double px0 = m0 * ((double)( y ) + 0.5f - v0.getY()) + v0.getX();
+			final double px1 = m1 * ((double)( y ) + 0.5f - v1.getY()) + v1.getX();
+
+			// calculate start and end pixels
+			final int xStart = (int)Math.ceil( px0 - 0.5f );
+			final int xEnd = (int)Math.ceil( px1 - 0.5f ); // the pixel AFTER the last pixel drawn
+
+			for( int x = xStart; x < xEnd; x++ ) {
+				double theZ = Calculator.zOnPlane(v0, v1, v2, x, y);
+				theScreen.setScreenColor3D(x, y, (int) theZ, theColor);
+			}
+		}
 	}
 	
-	private double getZatX(Coordinate c1, Coordinate c2, double theX) {
-    	double vz = c1.getZ() - c2.getZ();
-    	double vx = c1.getX() - c2.getX();
-    	
-    	
-    	
-    	double theZ = (c1.getZ() + vz * (theX - c1.getX())/vx); 
-    	
-    	return theZ;
+	private void drawFlatBottomTriangle(Coordinate v0, Coordinate v1, Coordinate v2, Color theColor) {
+		final double m0 = (v1.getX() - v0.getX()) / (v1.getY() - v0.getY());
+		final double m1 = (v2.getX() - v0.getX()) / (v2.getY() - v0.getY());
+			
+		// calculate start and end scanlines
+		final int yStart = (int)Math.ceil( v0.getY() - 0.5f );
+		final int yEnd = (int)Math.ceil( v2.getY() - 0.5f ); // the scanline AFTER the last line drawn
+		
+		for( int y = yStart; y < yEnd; y++ ) {
+			// calculate start and end points (x-coords)
+			// add 0.5 to y value because we're calculating based on pixel CENTERS
+			final double px0 = m0 * ((double)( y ) + 0.5f - v0.getY()) + v0.getX();
+			final double px1 = m1 * ((double)( y ) + 0.5f - v0.getY()) + v0.getX();
+
+			// calculate start and end pixels
+			final int xStart = (int)Math.ceil( px0 - 0.5f );
+			final int xEnd = (int)Math.ceil( px1 - 0.5f ); // the pixel AFTER the last pixel drawn
+
+			for( int x = xStart; x < xEnd; x++ ) {
+				double theZ = Calculator.zOnPlane(v0, v1, v2, x, y);
+				theScreen.setScreenColor3D(x, y, (int) theZ, theColor);
+			}
+		}
 	}
+	
+	
+
 	
 	
 	
@@ -628,7 +390,7 @@ public class RenderHandler {
  
         if (dx >= dy) {
             while (true) {
-            	double theZ = getZatX(c1, c2, x);
+            	double theZ = Calculator.getZatX(c1, c2, x);
             	
             	//drawLine3DCustom(c3, new Coordinate(x, y, theZ), color);
             	drawLine3D(c3, new Coordinate(x, y, theZ), color);
@@ -643,7 +405,7 @@ public class RenderHandler {
             }
         } else {
             while (true) {
-            	double theZ = getZatY(c1, c2, y);
+            	double theZ = Calculator.getZatY(c1, c2, y);
             	
             	//drawLine3DCustom(c3, new Coordinate(x, y, theZ), color);
             	drawLine3D(c3, new Coordinate(x, y, theZ), color);
@@ -657,6 +419,20 @@ public class RenderHandler {
                 }
             }
         }
+	}
+	
+	/**
+	 * Used to avoid drawing too large shapes
+	 *
+	 * @param c1
+	 * @return
+	 */
+	private static boolean coordInbond(Coordinate c1) {
+		if (c1.getX() >= -1000 && c1.getX() <= 1000 && c1.getY() >= -1000 && c1.getY() <= 1000) {
+			return true;
+		} else {
+			return false;
+		}
 	}
 	
 }
