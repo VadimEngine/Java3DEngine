@@ -48,6 +48,18 @@ public class Coordinate {
 		z += zAdd;
 	}
 	
+	public void add(Coordinate other) {
+		x += other.x;
+		y += other.y;
+		z += other.z;
+	}
+	
+	public void mulitply(double scaler) {
+		x *= scaler;
+		y *= scaler;
+		z *= scaler;
+	}
+	
 	//public void add(coordinate) {return new cord(x+x, y+y, z+z)}
 	
 	@Override

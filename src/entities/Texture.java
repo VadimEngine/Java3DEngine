@@ -21,6 +21,7 @@ public class Texture {
 	
 	
 	public Color getColor(double x, double y) {	
+		//System.out.println("Tex X:Y" + x + ", " + y);
 		int theX = (int) Math.floorMod((int) (image.getWidth()*x), image.getWidth());
 		int theY = (int) Math.floorMod((int) (image.getHeight()*y), image.getHeight());
 		
@@ -40,4 +41,31 @@ public class Texture {
 		return image;
 	}
 
+	
+	
+	public BufferedImage resizeImage(BufferedImage src, int width, int height) {
+		//check that width and height are > 0 and not too large
+		
+		BufferedImage localImage = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
+		
+		int x, y;
+	    int ww = src.getWidth();
+	    int hh = src.getHeight();
+	    int[] ys = new int[height];
+	    
+	    for (y = 0; y < height; y++) {
+	        ys[y] = y * hh / height;
+	    }
+	    
+	    for (x = 0; x < width; x++) {
+	        int newX = x * ww / width;
+	        for (y = 0; y < height; y++) {
+	            int col = src.getRGB(newX, ys[y]);
+	            localImage.setRGB(x, y, col);
+	        }
+	    }
+	    
+	    return localImage;
+	}
+	
 }
