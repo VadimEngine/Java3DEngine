@@ -11,6 +11,7 @@ import entities.Axis;
 import entities.Mesh;
 import entities.Object3D;
 import entities.Texture;
+import entities.TexturedCube;
 import entities.TexturedMesh;
 import entities.VertexTex;
 
@@ -38,10 +39,14 @@ public class LogicHandler {
 	public List<Mesh> meshList = new ArrayList<>();
 	
 	
-	private Texture theTexture = new Texture(Art.SPRITES[0][0]);
+	private Texture theTexture = new Texture(Art.SPRITES[1][5]);
 	
 	private TexturedMesh texCube = TexturedMesh.createTextureCube(500,500,100, 100, 100, 100, theTexture);
 	private TexturedMesh teapotTex = TexturedMesh.createTexTeapot();
+	
+	
+	private TexturedCube texturedCube = new TexturedCube(400,400,50,100,100,100,theTexture);
+	
 	
 	public LogicHandler(Handler handler) {
 		this.handler = handler;
@@ -153,8 +158,10 @@ public class LogicHandler {
 		//renderer.drawTriangleScanLineTex(v0, v3, v1, theTexture);
 		
 		
-		texCube.render(renderer, theCamera);
+		//texCube.render(renderer, theCamera);
 		//teapotTex.render(renderer, theCamera);
+		
+		texturedCube.render(renderer, theCamera);
 	}
 					
 	

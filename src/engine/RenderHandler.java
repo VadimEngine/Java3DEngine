@@ -56,7 +56,7 @@ public class RenderHandler {
 				pv0 = pv1;
 				pv1 = temp;
 			}
-			drawFlatTopTriangleTex( pv0, pv1, pv2, pv0.getTexture());
+			drawFlatTopTriangleTex( pv0, pv1, pv2, theTex);
 		} else if ( pv1.getY() == pv2.getY()) { // natural flat bottom
 			// sorting bottom vertices by x
 			if( pv2.getX() < pv1.getX() ) {
@@ -64,7 +64,7 @@ public class RenderHandler {
 				pv1 = pv2;
 				pv2 = temp;
 			}
-			drawFlatBottomTriangleTex( pv0, pv1, pv2, pv0.getTexture());
+			drawFlatBottomTriangleTex( pv0, pv1, pv2, theTex);
 		} else {
 			
 			double alphaSplit = (pv1.getY() - pv0.getY()) /
@@ -176,9 +176,9 @@ public class RenderHandler {
 				//temp.multiply(620.0f/theZ); //x,y *= z/(camera.getNear)
 				//temp.multiply(theZ/1000.0f); //x,y *= z/(camera.getNear)
 				if (temp.getTexX() > 1 || temp.getTexY() > 1) {
-					System.out.println(theZ + ": " + temp.getTexX() + ", " + temp.getTexY());					
+					//System.out.println(theZ + ": " + temp.getTexX() + ", " + temp.getTexY());					
 				}
-				
+				//System.out.println(theTex);
 				Color theColor = theTex.getColor(temp.getTexX(), temp.getTexY());
 				theScreen.setScreenColor3D(x, y, (int) theZ, theColor);
 			}

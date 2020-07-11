@@ -32,7 +32,7 @@ public class TexturedMesh {
 		this.theTexture = theTexture;
 	}
 	
-	//Use more verices
+	
 	public void render(RenderHandler renderer, Camera cam) {
 		for (int i = 0; i < indices.size(); i+=3) {
 			VertexTex c1 = texVertices.get(indices.get(i)).clone();
