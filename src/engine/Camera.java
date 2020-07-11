@@ -19,14 +19,17 @@ import entities.Object3D;
 public class Camera {
 	private DecimalFormat df = new DecimalFormat("#.00");
 
-	private static final int MAX_ANGLE = 360;
+	private static final double MAX_ANGLE = 2 * Math.PI;
 	
 	private Coordinate position;
 	
 	private double speed = 1;
+	
+	private double rotSpeed = 0.05;
+	
 	//Replace angles with directional Angle
 	private double xyAngle = 0;
-	private double zyAngle = 90;//0 points directly up
+	private double zyAngle = Math.PI/2;//0 points directly up
 	private double xzAngle = 0;
 	private double near = 620;
 	
@@ -53,14 +56,14 @@ public class Camera {
 	public Camera(double x, double y, double z) {
 		position = new Coordinate(x, y, z);
 		
-		cosXY = Math.cos((xyAngle) * Math.PI/180);
-		sinXY = Math.sin((xyAngle) * Math.PI/180);
+		cosXY = Math.cos((xyAngle));
+		sinXY = Math.sin((xyAngle));
 		
-		cosZY = Math.cos((zyAngle) * Math.PI/180);
-		sinZY = Math.sin((zyAngle) * Math.PI/180);
+		cosZY = Math.cos((zyAngle));
+		sinZY = Math.sin((zyAngle));
 		
-		cosXZ = Math.cos(-(xzAngle) * Math.PI/180);
-		sinXZ = Math.sin(-(xzAngle) * Math.PI/180);
+		cosXZ = Math.cos(-(xzAngle));
+		sinXZ = Math.sin(-(xzAngle));
 		
 		cameraBody = new Object3D(Mesh.createCubeMesh(x,y,z,1,1,1, Color.GRAY));
 		cameraBody.setXScale(10);
@@ -82,8 +85,8 @@ public class Camera {
 		if (focus) {
 			//only do trig calculations when needed(W||A||S||D||RIGHT||etc.)
 			
-			double zy = (zyAngle) * Math.PI/180.0;
-			double xy = (xyAngle+90.0) * Math.PI/180.0;
+			double zy = (zyAngle);
+			double xy = (xyAngle+Math.PI/2);
 			double sinZY = Math.sin(zy);
 			double sinXY = Math.sin(xy);
 			double cosZY = Math.cos(zy);
@@ -100,11 +103,11 @@ public class Camera {
 			}
 
 			if (handler.keys[KeyEvent.VK_D]) {
-				double xyRight = (xy - (90*Math.PI/180.0));
+				double xyRight = (xy - (Math.PI/2));
 				double sinXYRight = Math.sin(xyRight);
 				double cosXYRight = Math.cos(xyRight);
 
-				double zyRight = 90 * Math.PI/180;
+				double zyRight = Math.PI/2;
 				double sinZYRight = Math.sin(zyRight);
 				double cosZYRight = Math.cos(zyRight);
 
@@ -120,11 +123,11 @@ public class Camera {
 			}
 
 			if (handler.keys[KeyEvent.VK_A]) {
-				double xyLeft = (xy + (90*Math.PI/180.0));
+				double xyLeft = (xy + (Math.PI/2));
 				double sinXYLeft = Math.sin(xyLeft);
 				double cosXYLeft = Math.cos(xyLeft);
 
-				double zyLeft = 90 * Math.PI/180;
+				double zyLeft = Math.PI/2;
 				double sinZYLeft = Math.sin(zyLeft);
 				double cosZYLeft = Math.cos(zyLeft);
 
@@ -134,27 +137,33 @@ public class Camera {
 			}
 
 			if (handler.keys[KeyEvent.VK_RIGHT]) {
-				xyAngle = Math.floorMod((int)(xyAngle - speed), MAX_ANGLE);
+				//xyAngle = Math.floorMod((int)(xyAngle - speed), MAX_ANGLE);
+				xyAngle = (xyAngle - rotSpeed) % MAX_ANGLE;
 			}
 
 			if (handler.keys[KeyEvent.VK_LEFT]) {
-				xyAngle = Math.floorMod((int)(xyAngle + speed), MAX_ANGLE);
+				//xyAngle = Math.floorMod((int)(xyAngle + speed), MAX_ANGLE);
+				xyAngle = (xyAngle + rotSpeed) % MAX_ANGLE;
 			}
 
 			if (handler.keys[KeyEvent.VK_UP]) {
-				zyAngle = Math.floorMod((int)(zyAngle - speed), MAX_ANGLE);
+				//zyAngle = Math.floorMod((int)(zyAngle - speed), MAX_ANGLE);
+				zyAngle = (zyAngle - rotSpeed) % MAX_ANGLE;
 			}
 
 			if (handler.keys[KeyEvent.VK_DOWN]) {
-				zyAngle = Math.floorMod((int)(zyAngle + speed), MAX_ANGLE);
+				//zyAngle = Math.floorMod((int)(zyAngle + speed), MAX_ANGLE);
+				zyAngle = (zyAngle + rotSpeed) % MAX_ANGLE;
 			}
 
 			if (handler.keys[KeyEvent.VK_Q]) {
-				xzAngle = Math.floorMod((int)(xzAngle - speed), MAX_ANGLE);
+				//xzAngle = Math.floorMod((int)(xzAngle - speed), MAX_ANGLE);
+				xzAngle = (xzAngle - rotSpeed) % MAX_ANGLE;
 			}
 
 			if (handler.keys[KeyEvent.VK_E]) {
-				xzAngle = Math.floorMod((int)(xzAngle + speed), MAX_ANGLE);
+				//xzAngle = Math.floorMod((int)(xzAngle + speed), MAX_ANGLE);
+				xzAngle = (xzAngle + rotSpeed) % MAX_ANGLE;
 			}
 
 			if (handler.keys[KeyEvent.VK_SPACE]) {
@@ -189,16 +198,16 @@ public class Camera {
 	}
 
 	public void move(double angle) {
-		double xMov = Math.cos((angle + xyAngle - 90) * Math.PI/180) * 5;
-		double yMov = Math.sin((angle  +xyAngle - 90) * Math.PI/180) * 5;
+		double xMov = Math.cos((angle + xyAngle - Math.PI/2)) * 5;
+		double yMov = Math.sin((angle  +xyAngle - Math.PI/2)) * 5;
 		position.addX( - xMov );
 		position.addY( - yMov );		
 	}
 
 	// Needs to take mouse x and y into account to zoom into where the mouse is pointing (Fine the way it is?)
 	public void scrollCamera(double dir) {
-		double zy = (zyAngle) * Math.PI/180.0;
-		double xy = (xyAngle + 90) * Math.PI/180.0;
+		double zy = (zyAngle);
+		double xy = (xyAngle + Math.PI/2);
 		double sinZY = Math.sin(zy);
 		double sinXY = Math.sin(xy);
 		double cosZY = Math.cos(zy);
@@ -211,17 +220,22 @@ public class Camera {
 	// Need to take drag speed into account, maybe use mouse click and mouse move together instead of drag?
 	public void rotateCamera(double xdir, double ydir) {
 		if (ydir > 0) {
-			zyAngle = Math.floorMod((int)(zyAngle + speed), MAX_ANGLE);
+			//zyAngle = Math.floorMod((int)(zyAngle + speed), MAX_ANGLE);
+			zyAngle = (zyAngle + rotSpeed) % MAX_ANGLE;
+			
 		}
 		if (ydir < 0) {
-			zyAngle = Math.floorMod((int)(zyAngle - speed), MAX_ANGLE);
+			//zyAngle = Math.floorMod((int)(zyAngle - speed), MAX_ANGLE);
+			zyAngle = (zyAngle - rotSpeed) % MAX_ANGLE;
 		}
 
 		if (xdir > 0) {
-			xyAngle = Math.floorMod((int)(xyAngle - speed), MAX_ANGLE);
+			//xyAngle = Math.floorMod((int)(xyAngle - speed), MAX_ANGLE);
+			xyAngle = (xyAngle - rotSpeed) % MAX_ANGLE;
 		}
 		if (xdir < 0) {
-			xyAngle = Math.floorMod((int)(xyAngle + speed), MAX_ANGLE);
+			//xyAngle = Math.floorMod((int)(xyAngle + speed), MAX_ANGLE);
+			xyAngle = (xyAngle + rotSpeed) % MAX_ANGLE;
 		}
 	}
 
@@ -260,8 +274,8 @@ public class Camera {
 	public double getCosXY() {		
 		if (cachedXyAngle != xyAngle) {
 			cachedXyAngle = xyAngle;
-			cosXY = Math.cos((xyAngle) * Math.PI/180);
-			sinXY = Math.sin((xyAngle) * Math.PI/180);
+			cosXY = Math.cos((xyAngle));
+			sinXY = Math.sin((xyAngle));
 		}
 		return cosXY;
 	}
@@ -269,8 +283,8 @@ public class Camera {
 	public double getSinXY() {
 		if (cachedXyAngle != xyAngle) {
 			cachedXyAngle = xyAngle;
-			cosXY = Math.cos((xyAngle) * Math.PI/180);
-			sinXY = Math.sin((xyAngle) * Math.PI/180);
+			cosXY = Math.cos((xyAngle));
+			sinXY = Math.sin((xyAngle));
 		}
 		return sinXY;
 	}
@@ -278,8 +292,8 @@ public class Camera {
 	public double getCosZY() {
 		if (cachedZyAngle != zyAngle) {
 			cachedZyAngle = zyAngle;
-			cosZY = Math.cos((zyAngle) * Math.PI/180);
-			sinZY = Math.sin((zyAngle) * Math.PI/180);
+			cosZY = Math.cos((zyAngle));
+			sinZY = Math.sin((zyAngle));
 		}
 		return cosZY;
 	} 
@@ -287,8 +301,8 @@ public class Camera {
 	public double getSinZY() {
 		if (cachedZyAngle != zyAngle) {
 			cachedZyAngle = zyAngle;
-			cosZY = Math.cos((zyAngle) * Math.PI/180);
-			sinZY = Math.sin((zyAngle) * Math.PI/180);
+			cosZY = Math.cos((zyAngle));
+			sinZY = Math.sin((zyAngle));
 		}
 		return sinZY;
 	}
@@ -296,23 +310,23 @@ public class Camera {
 	public double getCosXZ() {
 		if (cachedXzAngle != xzAngle) {
 			cachedZyAngle = zyAngle;
-			cosXZ = Math.cos(-(xzAngle) * Math.PI/180);
-			sinXZ = Math.sin(-(xzAngle) * Math.PI/180);
+			cosXZ = Math.cos(-(xzAngle));
+			sinXZ = Math.sin(-(xzAngle));
 		}
 		return cosXZ;
 	}
 	public double getSinXZ() {
 		if (cachedXzAngle != xzAngle) {
 			cachedZyAngle = zyAngle;
-			cosXZ = Math.cos(-(xzAngle) * Math.PI/180);
-			sinXZ = Math.sin(-(xzAngle) * Math.PI/180);
+			cosXZ = Math.cos(-(xzAngle));
+			sinXZ = Math.sin(-(xzAngle));
 		}
 		return sinXZ;
 	}
 
 	public double[] getUnitComponent() {//take in unit size? take all 3 angles into account.
-		double zy = (zyAngle) * Math.PI/180.0;
-		double xy = (xyAngle+90) * Math.PI/180.0;
+		double zy = (zyAngle);
+		double xy = (xyAngle+Math.PI/2);
 		double sinZY = Math.sin(zy);
 		double sinXY = Math.sin(xy);
 		double cosZY = Math.cos(zy);
@@ -349,8 +363,8 @@ public class Camera {
 	}
 
 	public void moveForward() {
-		double zy = (zyAngle) * Math.PI/180.0;
-		double xy = (xyAngle + 90) * Math.PI/180.0;
+		double zy = (zyAngle);
+		double xy = (xyAngle + Math.PI/2);
 		double sinZY = Math.sin(zy);
 		double sinXY = Math.sin(xy);
 		double cosZY = Math.cos(zy);
