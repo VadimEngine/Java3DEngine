@@ -2,9 +2,9 @@ package engine;
 
 public class Coordinate {
 	
-	private double x;
-	private double y;
-	private double z;
+	protected double x;
+	protected double y;
+	protected double z;
 	
 	public Coordinate(double x, double y, double z) {
 		this.x = x;
@@ -54,7 +54,7 @@ public class Coordinate {
 		z += other.z;
 	}
 	
-	public void mulitply(double scaler) {
+	public void multiply(double scaler) {
 		x *= scaler;
 		y *= scaler;
 		z *= scaler;

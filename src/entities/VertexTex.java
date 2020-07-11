@@ -2,11 +2,7 @@ package entities;
 
 import engine.Coordinate;
 
-public class VertexTex {
-	
-	private double x;
-	private double y;
-	private double z;
+public class VertexTex extends Coordinate{
 	
 	private double texX;
 	private double texY;
@@ -14,41 +10,18 @@ public class VertexTex {
 	private Texture texture;
 	
 	public VertexTex(double x, double y, double z, double texX, double texY, Texture texture) {
-		this.x = x;
-		this.y = y;
-		this.z = z;
+		super(x, y, z);
 		this.texX = texX;
 		this.texY = texY;
 		this.texture = texture;
 	}
 	
-	public Coordinate getCoordiante() {
-		return new Coordinate(x, y, z);
+	public VertexTex(double x, double y, double z, double texX, double texY) {
+		super(x, y, z);
+		this.texX = texX;
+		this.texY = texY;
 	}
-
-	public double getX() {
-		return x;
-	}
-
-	public void setX(double x) {
-		this.x = x;
-	}
-
-	public double getY() {
-		return y;
-	}
-
-	public void setY(double y) {
-		this.y = y;
-	}
-
-	public double getZ() {
-		return z;
-	}
-
-	public void setZ(double z) {
-		this.z = z;
-	}
+	
 
 	public double getTexX() {
 		return texX;
@@ -73,5 +46,28 @@ public class VertexTex {
 	public void setTexture(Texture texture) {
 		this.texture = texture;
 	}
+	
+	@Override
+	public VertexTex clone() {
+		return new VertexTex(x, y, z, texX, texY, texture);
+	}
 
+	
+	public void add(VertexTex other) {
+		this.x += other.x;
+		this.y += other.y;
+		this.z += other.z;
+		this.texX += other.texX;
+		this.texY += other.texY;
+	}
+	
+	@Override
+	public void multiply(double scaler) {
+		this.x *= scaler;
+		this.y *= scaler;
+		this.z *= scaler;
+		this.texX *= scaler;
+		this.texY *= scaler;
+	}
+	
 }

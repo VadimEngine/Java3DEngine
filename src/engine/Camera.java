@@ -1,4 +1,5 @@
 package engine;
+import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.event.KeyEvent;
 import java.text.DecimalFormat;
@@ -61,7 +62,7 @@ public class Camera {
 		cosXZ = Math.cos(-(xzAngle) * Math.PI/180);
 		sinXZ = Math.sin(-(xzAngle) * Math.PI/180);
 		
-		cameraBody = new Object3D(Mesh.createCubeMesh());
+		cameraBody = new Object3D(Mesh.createCubeMesh(x,y,z,1,1,1, Color.GRAY));
 		cameraBody.setXScale(10);
 		cameraBody.setYScale(10);
 		cameraBody.setZScale(10);

@@ -9,7 +9,6 @@ import entities.VertexTex;
 public class RenderHandler {
 	
 	private Screen theScreen;
-
 			
 	public RenderHandler(Screen theScreen) {
 		this.theScreen = theScreen;
@@ -79,152 +78,112 @@ public class RenderHandler {
 									     pv0.getTexture());
 							
 			if( pv1.getX() < vi.getX() ) { // major right
-				drawFlatBottomTriangleTex( pv0, pv1, vi, pv0.getTexture() );
-				drawFlatTopTriangleTex( pv1, vi, pv2, pv0.getTexture() );
+				drawFlatBottomTriangleTex( pv0, pv1, vi, theTex );
+				drawFlatTopTriangleTex( pv1, vi, pv2, theTex );
 			} else { // major left
-				drawFlatBottomTriangleTex( pv0, vi, pv1, pv0.getTexture() );
-				drawFlatTopTriangleTex( vi, pv1, pv2, pv0.getTexture() );
+				drawFlatBottomTriangleTex( pv0, vi, pv1, theTex );
+				drawFlatTopTriangleTex( vi, pv1, pv2, theTex );
 			}
 		}
 	}
 	
-	private void drawFlatTopTriangleTex(VertexTex v0, VertexTex v1, VertexTex v2, Texture theTex) {
-		final double m0 = (v2.getX() - v0.getX()) / (v2.getY() - v0.getY());
-		final double m1 = (v2.getX() - v1.getX()) / (v2.getY() - v1.getY());
+	private void drawFlatTopTriangleTex(VertexTex v0, VertexTex v1, VertexTex v2, Texture theTex) {		
+		double delta_y = v2.getY() - v0.getY();
+		VertexTex dv0 = new VertexTex((v2.getX() - v0.getX()) / delta_y,
+									  (v2.getY() - v0.getY()) / delta_y,
+									  (v2.getZ() - v0.getZ()) / delta_y,
+									  (v2.getTexX() - v0.getTexX()) / delta_y,
+									  (v2.getTexY() - v0.getTexY()) / delta_y);
 		
-		// calculate start and end scanlines
-		final int yStart = (int)Math.ceil( v0.getY() - 0.5f );
-		final int yEnd = (int)Math.ceil( v2.getY() - 0.5f ); // the scanline AFTER the last line drawn
+		VertexTex dv1 = new VertexTex((v2.getX() - v1.getX()) / delta_y,
+									  (v2.getY() - v1.getY()) / delta_y,
+									  (v2.getZ() - v1.getZ()) / delta_y,
+									  (v2.getTexX() - v1.getTexX()) / delta_y,
+									  (v2.getTexY() - v1.getTexY()) / delta_y);
 		
+		VertexTex itEdge1 = v1.clone();
 		
-		Coordinate tcEdgeL = new Coordinate(  v0.getTexX(), v0.getTexY(), 0);
-		Coordinate tcEdgeR = new Coordinate(  v1.getTexX(), v1.getTexY(), 0);
-		
-		Coordinate tcBottom = new Coordinate(v2.getTexX(), v2.getTexY(), 0);
-		
-		
-		
-		Coordinate tcEdgeStepL = new Coordinate( (tcBottom.getX() - tcEdgeL.getX() ) / (v2.getY() - v0.getY()),
-												 (tcBottom.getY() - tcEdgeL.getY() ) / (v2.getY() - v0.getY()),
-												 (tcBottom.getZ() - tcEdgeL.getZ() ) / (v2.getY() - v0.getY()));
-
-		Coordinate tcEdgeStepR = new Coordinate( (tcBottom.getX() - tcEdgeR.getX() ) / (v2.getY() - v1.getY()),
-												 (tcBottom.getY() - tcEdgeR.getY() ) / (v2.getY() - v1.getY()),
-												 (tcBottom.getZ() - tcEdgeR.getZ() ) / (v2.getY() - v1.getY()));
-		
-		// init tex width/height and clamp values
-		double tex_width = (double)theTex.getWidth();
-		double tex_height = (double)theTex.getHeight();
-		double tex_clamp_x = tex_width - 1.0f;
-		double tex_clamp_y = tex_height - 1.0f;
-		
-		
-		
-
-		for( int y = yStart; y < yEnd; y++, tcEdgeL.add(tcEdgeStepL), tcEdgeR.add(tcEdgeStepR) ) {
-			// calculate start and end points (x-coords)
-			// add 0.5 to y value because we're calculating based on pixel CENTERS
-			final double px0 = m0 * ((double)( y ) + 0.5f - v0.getY()) + v0.getX();
-			final double px1 = m1 * ((double)( y ) + 0.5f - v1.getY()) + v1.getX();
-
-			// calculate start and end pixels
-			final int xStart = (int)Math.ceil( px0 - 0.5f );
-			final int xEnd = (int)Math.ceil( px1 - 0.5f ); // the pixel AFTER the last pixel drawn
-			
-			
-			Coordinate tcScanStep = new Coordinate((tcEdgeR.getX() - tcEdgeL.getX()) / (px1 - px0),
-												   (tcEdgeR.getY() - tcEdgeL.getY()) / (px1 - px0),
-												   (tcEdgeR.getZ() - tcEdgeL.getZ()) / (px1 - px0));
-
-
-
-			// do tex coord scanline prestep
-			Coordinate tc = new Coordinate(tcEdgeL.getX() + tcScanStep.getX() * ((double)xStart + 0.5 - px0),
-										   tcEdgeL.getY() + tcScanStep.getY() * ((double)xStart + 0.5 - px0),
-										   tcEdgeL.getZ() + tcScanStep.getZ() * ((double)xStart + 0.5 - px0));
-			
-
-			for ( int x = xStart; x < xEnd; x++, tc.add(tcScanStep)) {
-				double theZ = Calculator.zOnPlane(v0.getCoordiante(), v1.getCoordiante(), v2.getCoordiante(), x, y);
-				Color theColor = theTex.getColor(tc.getX(), tc.getY());
-				theScreen.setScreenColor3D(x, y, (int) theZ, theColor);
-			}
-		}
+		drawFlatTriangleTex(v0, v1, v2, theTex, dv0, dv1, itEdge1);
 	}
 	
 	
-	private void drawFlatBottomTriangleTex(VertexTex v0, VertexTex v1, VertexTex v2, Texture theTex) {
+	private void drawFlatBottomTriangleTex(VertexTex v0, VertexTex v1, VertexTex v2, Texture theTex) {		
+		double delta_y = v2.getY() - v0.getY();
+		VertexTex dv0 = new VertexTex((v1.getX()    - v0.getX()) / delta_y,
+									  (v1.getY()    - v0.getY()) / delta_y,
+									  (v1.getZ()    - v0.getZ()) / delta_y,
+									  (v1.getTexX() - v0.getTexX()) / delta_y,
+									  (v1.getTexY() - v0.getTexY()) / delta_y);
 		
-		final double m0 = (v1.getX() - v0.getX()) / (v1.getY() - v0.getY());
-		final double m1 = (v2.getX() - v0.getX()) / (v2.getY() - v0.getY());
+		VertexTex dv1 = new VertexTex((v2.getX()    - v0.getX()) / delta_y,
+									  (v2.getY()    - v0.getY()) / delta_y,
+									  (v2.getZ()    - v0.getZ()) / delta_y,
+									  (v2.getTexX() - v0.getTexX()) / delta_y,
+									  (v2.getTexY() - v0.getTexY()) / delta_y);
+		
+		VertexTex itEdge1 = v0.clone();
+		
+		drawFlatTriangleTex(v0, v1, v2, theTex, dv0, dv1, itEdge1);
+	}
+	
+	
+	
+	private void drawFlatTriangleTex(VertexTex v0, VertexTex v1, VertexTex v2,
+								Texture theTex, VertexTex dv0, VertexTex dv1, VertexTex itEdge1)  {
+				
+		VertexTex itEdge0 = v0.clone();
 			
 		// calculate start and end scanlines
 		final int yStart = (int)Math.ceil( v0.getY() - 0.5f );
 		final int yEnd = (int)Math.ceil( v2.getY() - 0.5f ); // the scanline AFTER the last line drawn
 		
-		// init tex coord edges
-		Coordinate tcEdgeL = new Coordinate(  v0.getTexX(), v0.getTexY(), 0);
-		Coordinate tcEdgeR = new Coordinate(  v0.getTexX(), v0.getTexY(), 0);
-		Coordinate tcBottomL = new Coordinate(v1.getTexX(), v1.getTexY(), 0);
-		Coordinate tcBottomR = new Coordinate(v2.getTexX(), v2.getTexY(), 0);
+		itEdge0.add(new VertexTex(dv0.getX()    * ((double)yStart + 0.5f - v0.getY()),
+								  dv0.getY()    * ((double)yStart + 0.5f - v0.getY()),
+								  dv0.getZ()    * ((double)yStart + 0.5f - v0.getY()),
+								  dv0.getTexX() * ((double)yStart + 0.5f - v0.getY()),
+								  dv0.getTexY() * ((double)yStart + 0.5f - v0.getY())
+								  ));
 		
-		
-		// calculate tex coord edge unit steps
-		Coordinate tcEdgeStepL = new Coordinate( (tcBottomL.getX() - tcEdgeL.getX() ) / (v1.getY() - v0.getY()),
-												 (tcBottomL.getY() - tcEdgeL.getY() ) / (v1.getY() - v0.getY()),
-												 (tcBottomL.getZ() - tcEdgeL.getZ() ) / (v1.getY() - v0.getY()));
-
-		Coordinate tcEdgeStepR = new Coordinate( (tcBottomR.getX() - tcEdgeR.getX() ) / (v2.getY() - v0.getY()),
-												 (tcBottomR.getY() - tcEdgeR.getY() ) / (v2.getY() - v0.getY()),
-												 (tcBottomR.getZ() - tcEdgeR.getZ() ) / (v2.getY() - v0.getY()));		
-		
-		
-		tcEdgeL.add (new Coordinate(tcEdgeStepL.getX() * ((double)yStart + 0.5f - v0.getY()),
-							        tcEdgeStepL.getY() * ((double)yStart + 0.5f - v0.getY()),
-							        tcEdgeStepL.getZ() * ((double)yStart + 0.5f - v0.getY()) ));
-		
-		
-		tcEdgeR.add (new Coordinate(tcEdgeStepR.getX() * ((double)yStart + 0.5f - v0.getY()),
-					  		        tcEdgeStepR.getY() * ((double)yStart + 0.5f - v0.getY()),
-							        tcEdgeStepR.getZ() * ((double)yStart + 0.5f - v0.getY()) ));
-
-		// init tex width/height and clamp values
-		double tex_width = (double)theTex.getWidth();
-		double tex_height = (double)theTex.getHeight();
-		double tex_clamp_x = tex_width - 1.0f;
-		double tex_clamp_y = tex_height - 1.0f;
-		
-		
-		for( int y = yStart; y < yEnd; y++, tcEdgeL.add(tcEdgeStepL), tcEdgeR.add(tcEdgeStepR)  ) {
+		itEdge1.add(new VertexTex(dv1.getX()    * ((double)yStart + 0.5f - v0.getY()),
+								  dv1.getY()    * ((double)yStart + 0.5f - v0.getY()),
+								  dv1.getZ()    * ((double)yStart + 0.5f - v0.getY()),
+								  dv1.getTexX() * ((double)yStart + 0.5f - v0.getY()),
+								  dv1.getTexY() * ((double)yStart + 0.5f - v0.getY())
+								  ));
+				
+		for( int y = yStart; y < yEnd; y++, itEdge0.add(dv0), itEdge1.add(dv1) ) {
 						
-			// calculate start and end points (x-coords)
-			// add 0.5 to y value because we're calculating based on pixel CENTERS
-			final double px0 = m0 * ((double)y + 0.5f - v0.getY()) + v0.getX();
-			final double px1 = m1 * ((double)y + 0.5f - v0.getY()) + v0.getX();
-
 			// calculate start and end pixels
-			final int xStart = (int)Math.ceil( px0 - 0.5f );
-			final int xEnd = (int)Math.ceil( px1 - 0.5f ); // the pixel AFTER the last pixel drawn
+			final int xStart = (int)Math.ceil( itEdge0.getX() - 0.5f );
+			final int xEnd = (int)Math.ceil( itEdge1.getX() - 0.5f ); // the pixel AFTER the last pixel drawn
 			
-			Coordinate tcScanStep = new Coordinate((tcEdgeR.getX() - tcEdgeL.getX()) / (px1 - px0),
-												   (tcEdgeR.getY() - tcEdgeL.getY()) / (px1 - px0),
-												   (tcEdgeR.getZ() - tcEdgeL.getZ()) / (px1 - px0));
+			VertexTex dtcLine = new VertexTex(0,0, 0,
+										      (itEdge1.getTexX() - itEdge0.getTexX()) / (itEdge1.getX() - itEdge0.getX()),
+										      (itEdge1.getTexY() - itEdge0.getTexY()) / (itEdge1.getX() - itEdge0.getX()));
 					
-
-
-			// do tex coord scanline prestep
-			Coordinate tc = new Coordinate(tcEdgeL.getX() + tcScanStep.getX() * ((double)xStart + 0.5 - px0),
-										   tcEdgeL.getY() + tcScanStep.getY() * ((double)xStart + 0.5 - px0),
-										   tcEdgeL.getZ() + tcScanStep.getZ() * ((double)xStart + 0.5 - px0));
+			VertexTex itcLine = new VertexTex(0,0,0,
+											 itEdge0.getTexX() + dtcLine.getTexX() * ((float)xStart + 0.5f - itEdge0.getX()),
+											 itEdge0.getTexY() + dtcLine.getTexY() * ((float)xStart + 0.5f - itEdge0.getX()));
+			
 					
-					
-			for( int x = xStart; x < xEnd; x++, tc.add(tcScanStep)) {
-				double theZ = Calculator.zOnPlane(v0.getCoordiante(), v1.getCoordiante(), v2.getCoordiante(), x, y);
-								
-				Color theColor = theTex.getColor(tc.getX(), tc.getY());
+			for( int x = xStart; x < xEnd; x++, itcLine.add(dtcLine)) {
+				double theZ = Calculator.zOnPlane(v0, v1, v2, x, y);
+				
+				//System.out.println(theZ);
+				
+				VertexTex temp = itcLine.clone();
+			
+				//temp.multiply(620.0f/theZ); //x,y *= z/(camera.getNear)
+				//temp.multiply(theZ/1000.0f); //x,y *= z/(camera.getNear)
+				if (temp.getTexX() > 1 || temp.getTexY() > 1) {
+					System.out.println(theZ + ": " + temp.getTexX() + ", " + temp.getTexY());					
+				}
+				
+				Color theColor = theTex.getColor(temp.getTexX(), temp.getTexY());
 				theScreen.setScreenColor3D(x, y, (int) theZ, theColor);
 			}
 		}
+		
 	}
 	
 	
@@ -634,7 +593,7 @@ public class RenderHandler {
 	 * @return
 	 */
 	private static boolean coordInbond(Coordinate c1) {
-		if (c1.getX() >= -1000 && c1.getX() <= 1000 && c1.getY() >= -1000 && c1.getY() <= 1000) {
+		if (c1.getX() >= -1000 && c1.getX() <= 1500 && c1.getY() >= -1000 && c1.getY() <= 1500) {
 			return true;
 		} else {
 			return false;
@@ -642,7 +601,7 @@ public class RenderHandler {
 	}
 	
 	private static boolean coordInbond(VertexTex c1) {
-		if (c1.getX() >= -1000 && c1.getX() <= 1000 && c1.getY() >= -1000 && c1.getY() <= 1000) {
+		if (c1.getX() >= -1000 && c1.getX() <= 1500 && c1.getY() >= -1000 && c1.getY() <= 1500) {
 			return true;
 		} else {
 			return false;

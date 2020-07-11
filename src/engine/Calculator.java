@@ -1,5 +1,6 @@
 package engine;
 
+import entities.VertexTex;
 
 /**
  * 
@@ -97,14 +98,27 @@ public class Calculator {
 		rot = matrixMult(rot, xz);
 		rot = matrixMult(rot, zy);
 		
-		rot[0] /= rot[2]/cam.getNear();
-		rot[1] /= rot[2]/cam.getNear();	
 
+		
+		rot[0] /= (rot[2]/cam.getNear());
+		rot[1] /= (rot[2]/cam.getNear());	
 		
 		rot[0] += WIDTH/2;//centers the rendering
 		rot[1] += HEIGHT/2;//centers the rendering
+
 		
-		return new Coordinate(rot[0], rot[1], rot[2]);
+
+		
+		if (coord instanceof VertexTex) {
+			return new VertexTex(rot[0], rot[1], rot[2],
+					((VertexTex) coord).getTexX(),
+					((VertexTex) coord).getTexY(),
+					((VertexTex) coord).getTexture());
+		} else {
+			return new Coordinate(rot[0], rot[1], rot[2]);
+		}
+		
+		
 	}
 	
 	//methods to generate rotational matrices

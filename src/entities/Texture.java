@@ -2,21 +2,15 @@ package entities;
 
 import java.awt.Color;
 import java.awt.image.BufferedImage;
-import java.io.File;
-import java.io.IOException;
-
-import javax.imageio.ImageIO;
 
 public class Texture {
 	
 	private BufferedImage image;
 	
-	public Texture() {
-		try {
-			image = ImageIO.read(new File("./res/Sprites.png"));
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
+
+	
+	public Texture(BufferedImage theImage) {
+		this.image = theImage;
 	}
 	
 	
