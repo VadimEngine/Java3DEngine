@@ -23,7 +23,7 @@ public class Camera {
 	
 	private Coordinate position;
 	
-	private double speed = 1;
+	private double speed = 5;
 	
 	private double rotSpeed = 0.05;
 	
@@ -90,16 +90,12 @@ public class Camera {
 			double sinZY = Math.sin(zy);
 			double sinXY = Math.sin(xy);
 			double cosZY = Math.cos(zy);
-			double cosXY = Math.cos(xy);
-		
-//			double xz = (xzAngle) * Math.PI/180;
-//			double sinXZ = Math.sin(xz);
-//			double cosXZ = Math.sin(xz);		
+			double cosXY = Math.cos(xy);	
 
 			if (handler.keys[KeyEvent.VK_W]) {
-				position.addX( sinZY*cosXY*(speed* 5.0) );
-				position.addY( sinZY*sinXY*(speed* 5.0) );
-				position.addZ( cosZY * (speed* 5.0) );
+				position.addX( sinZY*cosXY*(speed) );
+				position.addY( sinZY*sinXY*(speed) );
+				position.addZ( cosZY * (speed) );
 			}
 
 			if (handler.keys[KeyEvent.VK_D]) {
@@ -111,15 +107,15 @@ public class Camera {
 				double sinZYRight = Math.sin(zyRight);
 				double cosZYRight = Math.cos(zyRight);
 
-				position.addX( sinZYRight*cosXYRight*(speed* 5.0) );
-				position.addY( sinZYRight*sinXYRight*(speed* 5.0) );
-				position.addZ( cosZYRight * (speed* 5.0) );
+				position.addX( sinZYRight*cosXYRight*(speed) );
+				position.addY( sinZYRight*sinXYRight*(speed) );
+				position.addZ( cosZYRight * (speed) );
 			}
 
 			if (handler.keys[KeyEvent.VK_S]) {
-				position.addX( -sinZY*cosXY*(speed* 5.0) );
-				position.addY( -sinZY*sinXY*(speed* 5.0) );
-				position.addZ( -cosZY * (speed* 5.0) );
+				position.addX( -sinZY*cosXY*(speed) );
+				position.addY( -sinZY*sinXY*(speed) );
+				position.addZ( -cosZY * (speed) );
 			}
 
 			if (handler.keys[KeyEvent.VK_A]) {
@@ -131,38 +127,32 @@ public class Camera {
 				double sinZYLeft = Math.sin(zyLeft);
 				double cosZYLeft = Math.cos(zyLeft);
 
-				position.addX( sinZYLeft*cosXYLeft*(speed* 5.0) );
-				position.addY( sinZYLeft*sinXYLeft*(speed* 5.0) );
-				position.addZ( cosZYLeft * (speed* 5.0) );
+				position.addX( sinZYLeft*cosXYLeft*(speed) );
+				position.addY( sinZYLeft*sinXYLeft*(speed) );
+				position.addZ( cosZYLeft * (speed) );
 			}
 
 			if (handler.keys[KeyEvent.VK_RIGHT]) {
-				//xyAngle = Math.floorMod((int)(xyAngle - speed), MAX_ANGLE);
 				xyAngle = (xyAngle - rotSpeed) % MAX_ANGLE;
 			}
 
 			if (handler.keys[KeyEvent.VK_LEFT]) {
-				//xyAngle = Math.floorMod((int)(xyAngle + speed), MAX_ANGLE);
 				xyAngle = (xyAngle + rotSpeed) % MAX_ANGLE;
 			}
 
 			if (handler.keys[KeyEvent.VK_UP]) {
-				//zyAngle = Math.floorMod((int)(zyAngle - speed), MAX_ANGLE);
 				zyAngle = (zyAngle - rotSpeed) % MAX_ANGLE;
 			}
 
 			if (handler.keys[KeyEvent.VK_DOWN]) {
-				//zyAngle = Math.floorMod((int)(zyAngle + speed), MAX_ANGLE);
 				zyAngle = (zyAngle + rotSpeed) % MAX_ANGLE;
 			}
 
 			if (handler.keys[KeyEvent.VK_Q]) {
-				//xzAngle = Math.floorMod((int)(xzAngle - speed), MAX_ANGLE);
 				xzAngle = (xzAngle - rotSpeed) % MAX_ANGLE;
 			}
 
 			if (handler.keys[KeyEvent.VK_E]) {
-				//xzAngle = Math.floorMod((int)(xzAngle + speed), MAX_ANGLE);
 				xzAngle = (xzAngle + rotSpeed) % MAX_ANGLE;
 			}
 
@@ -212,29 +202,23 @@ public class Camera {
 		double sinXY = Math.sin(xy);
 		double cosZY = Math.cos(zy);
 		double cosXY = Math.cos(xy);
-		position.addX( -sinZY*cosXY*(speed* dir * 40) );
-		position.addY( - sinZY*sinXY*(speed* dir * 40) );
-		position.addZ( -cosZY * (speed* dir * 20) );
+		position.addX( -sinZY*cosXY*(speed* dir * 8) );
+		position.addY( - sinZY*sinXY*(speed* dir * 8) );
+		position.addZ( -cosZY * (speed* dir * 4) );
 	}
 
 	// Need to take drag speed into account, maybe use mouse click and mouse move together instead of drag?
 	public void rotateCamera(double xdir, double ydir) {
 		if (ydir > 0) {
-			//zyAngle = Math.floorMod((int)(zyAngle + speed), MAX_ANGLE);
 			zyAngle = (zyAngle + rotSpeed) % MAX_ANGLE;
-			
 		}
 		if (ydir < 0) {
-			//zyAngle = Math.floorMod((int)(zyAngle - speed), MAX_ANGLE);
 			zyAngle = (zyAngle - rotSpeed) % MAX_ANGLE;
 		}
-
 		if (xdir > 0) {
-			//xyAngle = Math.floorMod((int)(xyAngle - speed), MAX_ANGLE);
 			xyAngle = (xyAngle - rotSpeed) % MAX_ANGLE;
 		}
 		if (xdir < 0) {
-			//xyAngle = Math.floorMod((int)(xyAngle + speed), MAX_ANGLE);
 			xyAngle = (xyAngle + rotSpeed) % MAX_ANGLE;
 		}
 	}
@@ -370,9 +354,9 @@ public class Camera {
 		double cosZY = Math.cos(zy);
 		double cosXY = Math.cos(xy);
 		
-		position.addX( sinZY*cosXY*(speed* 5.0) );
-		position.addY( sinZY*sinXY*(speed* 5.0) );
-		position.addZ( cosZY * (speed* 5.0) );
+		position.addX( sinZY*cosXY*(speed) );
+		position.addY( sinZY*sinXY*(speed) );
+		position.addZ( cosZY * (speed) );
 	}
 
 }
