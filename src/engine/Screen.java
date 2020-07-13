@@ -58,6 +58,7 @@ public class Screen {
 	}
 	
 	public void setScreenColor3D(int xPos, int yPos, int zPos, Color color) {	
+		//Done render "alpha" dedicated colors
 		if (color.equals(ALPHA_COLOR1) || color.equals(ALPHA_COLOR2)) {
 			return;
 		}

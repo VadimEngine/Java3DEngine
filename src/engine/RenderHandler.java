@@ -173,7 +173,7 @@ public class RenderHandler {
 				
 				VertexTex temp = itcLine.clone();
 			
-				//temp.multiply(620.0f/theZ); //x,y *= z/(camera.getNear)
+				//temp.multiply(theZ); //x,y *= z/(camera.getNear)
 				//temp.multiply(theZ/1000.0f); //x,y *= z/(camera.getNear)
 				if (temp.getTexX() > 1 || temp.getTexY() > 1) {
 					//System.out.println(theZ + ": " + temp.getTexX() + ", " + temp.getTexY());					

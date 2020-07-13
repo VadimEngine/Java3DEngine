@@ -98,10 +98,15 @@ public class Calculator {
 		rot = matrixMult(rot, xz);
 		rot = matrixMult(rot, zy);
 		
-
+		//640+256, 640
 		
 		rot[0] /= (rot[2]/cam.getNear());
 		rot[1] /= (rot[2]/cam.getNear());	
+		
+		
+		
+		//rot[0] /= (rot[2]/((640+256)/2));
+		//rot[1] /= (rot[2]/(640/2));	
 		
 		rot[0] += WIDTH/2;//centers the rendering
 		rot[1] += HEIGHT/2;//centers the rendering

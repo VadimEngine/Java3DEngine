@@ -39,3 +39,7 @@ The user can hover their cursor over objects which will be colored yellow and th
 Users can add objects into the environment by selecting from the Mesh JList and clicking the add button.
 
 ![Screen1](./Screenshots/View9.png)
+
+Objects can also be rendered with a texture from a PNG file. The textures are rendered using affine texture mapping. The texture is defective at certain angles due to perspective. Perspective correction is needed to improve the texture rendering. 
+
+![Screen](./Screenshots/View10.png)
