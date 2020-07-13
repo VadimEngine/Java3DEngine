@@ -1,5 +1,6 @@
 package engine;
 
+import entities.VertexTex;
 
 /**
  * 
@@ -21,14 +22,14 @@ public class Calculator {
 	public static Coordinate rotateAroundCenter(Coordinate coord, Coordinate center, 
 												double XYAngle, double XZAngle, double ZYAngle) {
 		
-		double cosXY = Math.cos(-(XYAngle) * Math.PI/180);
-		double sinXY = Math.sin(-(XYAngle) * Math.PI/180);
+		double cosXY = Math.cos(-(XYAngle));
+		double sinXY = Math.sin(-(XYAngle));
 		
-		double cosZY = Math.cos(-(ZYAngle) * Math.PI/180);
-		double sinZY = Math.sin((-ZYAngle) * Math.PI/180);
+		double cosZY = Math.cos(-(ZYAngle));
+		double sinZY = Math.sin((-ZYAngle));
 		
-		double cosXZ = Math.cos(-(XZAngle) * Math.PI/180);
-		double sinXZ = Math.sin(-(XZAngle) * Math.PI/180);
+		double cosXZ = Math.cos(-(XZAngle));
+		double sinXZ = Math.sin(-(XZAngle));
 		
 		double[] rot = new double[]{coord.getX() - center.getX(), coord.getY()- center.getY(), coord.getZ() - center.getZ()};
 		
@@ -97,12 +98,32 @@ public class Calculator {
 		rot = matrixMult(rot, xz);
 		rot = matrixMult(rot, zy);
 		
-		rot[0] /= rot[2]/cam.getNear();
-		rot[1] /= rot[2]/cam.getNear();
+		//640+256, 640
+		
+		rot[0] /= (rot[2]/cam.getNear());
+		rot[1] /= (rot[2]/cam.getNear());	
+		
+		
+		
+		//rot[0] /= (rot[2]/((640+256)/2));
+		//rot[1] /= (rot[2]/(640/2));	
+		
 		rot[0] += WIDTH/2;//centers the rendering
 		rot[1] += HEIGHT/2;//centers the rendering
+
 		
-		return new Coordinate(rot[0], rot[1], rot[2]);
+
+		
+		if (coord instanceof VertexTex) {
+			return new VertexTex(rot[0], rot[1], rot[2],
+					((VertexTex) coord).getTexX(),
+					((VertexTex) coord).getTexY(),
+					((VertexTex) coord).getTexture());
+		} else {
+			return new Coordinate(rot[0], rot[1], rot[2]);
+		}
+		
+		
 	}
 	
 	//methods to generate rotational matrices
@@ -191,6 +212,10 @@ public class Calculator {
 		result[2] = m1[0] * m2[0][2] + m1[1] * m2[1][2] + m1[2] * m2[2][2];
 		return result;
 	}	
+	
+	public static double floatMod(double x, double y) {
+		return (x-Math.floor(x/y) * y);
+	}
 	
 	
 }

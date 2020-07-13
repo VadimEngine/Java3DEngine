@@ -3,11 +3,14 @@ package entities;
 import java.awt.Color;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import engine.Calculator;
 import engine.Camera;
 import engine.Coordinate;
+import engine.MeshLoader;
 import engine.RenderHandler;
 
 /**
@@ -20,6 +23,34 @@ import engine.RenderHandler;
  *
  */
 public class Mesh {
+	
+	
+	public final static Map<String, Mesh> MESHES;
+	
+	
+	static {
+		MESHES = new HashMap<>();
+		try {
+		
+		//load all meshes from file
+		
+		Mesh teapot = MeshLoader.loadMesh("teapot.txt");
+		teapot.setName("Teapot");
+		MESHES.put("Teapot", teapot);
+		
+		Mesh sphere = MeshLoader.loadMesh("sphere.txt");
+		sphere.setName("Sphere");
+		MESHES.put("Sphere", sphere);
+		
+		Mesh cone = MeshLoader.loadMesh("cone.txt");
+		cone.name = "Cone";
+		MESHES.put("Cone", cone);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+	
+	
 	
 	private static int MeshCount = 0;
 	//middle coordinate defaults to 0,0,0
@@ -43,7 +74,6 @@ public class Mesh {
 	}
 	
 	public void render(RenderHandler renderer, Camera cam) {
-
 		for (int i = 0; i < indices.size(); i+=3) {
 			Coordinate c1 = vertices.get(indices.get(i)).clone();
 			Coordinate c2 = vertices.get(indices.get(i + 1)).clone();
@@ -82,39 +112,36 @@ public class Mesh {
 	
 	//STATIC
 	
-	public static Mesh createCubeMesh() {
-		List<Coordinate> coordsRect = new ArrayList<>();
+	public static Mesh createCubeMesh(double x, double y, double z,
+			double width, double depth, double height, Color theColor) {
 		
-		coordsRect.add(new Coordinate(-1, -1, -1));	//0
-		coordsRect.add(new Coordinate(1, -1, -1));	//1
-		coordsRect.add(new Coordinate(1, 1, -1));	//2
-		coordsRect.add(new Coordinate(-1, 1, -1));	//3
-		coordsRect.add(new Coordinate(-1, -1, 1));	//4
-		coordsRect.add(new Coordinate(1, -1, 1));	//5
-		coordsRect.add(new Coordinate(1, 1, 1));		//6
-		coordsRect.add(new Coordinate(-1, 1, 1));	//7
-		
+		List<Coordinate> coords = new ArrayList<>();
 		List<Integer> indices = new ArrayList<>();
+				
+		coords.add(new Coordinate(x, y, z));
+		coords.add(new Coordinate(x + width , y, z));
+		coords.add(new Coordinate(x + width, y + depth, z));
+		coords.add(new Coordinate(x, y + depth, z));
+		
+		coords.add(new Coordinate(x, y, z + height));
+		coords.add(new Coordinate(x + width, y, z + height));
+		coords.add(new Coordinate(x + width, y + depth, z + height));
+		coords.add(new Coordinate(x, y + depth, z+ height));
 		
 		Collections.addAll(indices, new Integer[]{0,1,2});
 		Collections.addAll(indices, new Integer[]{0,3,2});
-		
 		Collections.addAll(indices, new Integer[]{0,4,1});
 		Collections.addAll(indices, new Integer[]{1,5,4});
-		
 		Collections.addAll(indices, new Integer[]{0,3,7});
 		Collections.addAll(indices, new Integer[]{0,4,7});
-		
 		Collections.addAll(indices, new Integer[]{2,1,5});
 		Collections.addAll(indices, new Integer[]{2,5,6});
-		
 		Collections.addAll(indices, new Integer[]{2,3,7});
 		Collections.addAll(indices, new Integer[]{2,6,7});
-		
 		Collections.addAll(indices, new Integer[]{4,7,6});
 		Collections.addAll(indices, new Integer[]{4,6,5});
 		
-		return new Mesh(coordsRect, indices);
+		return new Mesh(coords, indices, theColor);
 	}
 	
 	@Override

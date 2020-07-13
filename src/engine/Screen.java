@@ -21,6 +21,8 @@ public class Screen {
 	
 	private Color background = Color.LIGHT_GRAY;
 	
+	private static final Color ALPHA_COLOR1 = new Color(255,0,255);
+	private static final Color ALPHA_COLOR2 = new Color(200,0,200);
 
 	/**
 	 * Constructor that initializes cameras and populates all the polygons to render.
@@ -55,7 +57,13 @@ public class Screen {
 		}
 	}
 	
-	public void setScreenColor3D(int xPos, int yPos, int zPos, Color color) {		
+	public void setScreenColor3D(int xPos, int yPos, int zPos, Color color) {	
+		//Done render "alpha" dedicated colors
+		if (color.equals(ALPHA_COLOR1) || color.equals(ALPHA_COLOR2)) {
+			return;
+		}
+		
+		
 		//Only color the closest positive-z pixels
 		if (xPos >= 0 && xPos < theScreen.getWidth() && yPos >= 0 && yPos < theScreen.getHeight()) {
 			int pixelIndex = xPos + yPos * theScreen.getWidth();

@@ -9,12 +9,56 @@ import java.util.Scanner;
 
 import entities.Mesh;
 
+/**
+ * TODO: Add method to load all meshes in a folder
+ * @author Vadim
+ *
+ */
 public class MeshLoader {
+	
+	public static Mesh loadMesh(String fileName) {
+		URL resource = MeshLoader.class.getClassLoader().getResource(fileName);
+
+		File theFile = new File(resource.getFile());
+		
+		List<Coordinate> vetex = new ArrayList<>();
+		List<Integer> index = new ArrayList<>();
+		
+		try {
+			Scanner sc = new Scanner(theFile);
+			while (sc.hasNext()) {
+				String mark = sc.next();
+				
+				if (mark.equals("v")) {
+					double x = sc.nextDouble();
+					double y = sc.nextDouble();
+					double z = sc.nextDouble();
+					
+					vetex.add(new Coordinate(x, y, z));
+				} 
+				
+				if (mark.equals("f")) {
+					int i1 = sc.nextInt();
+					int i2 = sc.nextInt();
+					int i3 = sc.nextInt();
+									
+					index.add(i1 - 1);
+					index.add(i2 - 1);
+					index.add(i3 - 1);
+				}
+			}
+			
+			sc.close();
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		}
+		
+		return new Mesh(vetex, index);
+	}
 	
 	
 	public static Mesh loadMesh() {	
-		String filename = "teapot.txt";
-		//ClassLoader classLoader = getClass().getClassLoader();
+		String filename = "sphere.txt";
 		URL resource = MeshLoader.class.getClassLoader().getResource(filename);
 
 		File theFile = new File(resource.getFile());
@@ -44,19 +88,14 @@ public class MeshLoader {
 					index.add(i2 - 1);
 					index.add(i3 - 1);
 				}
-				
 			}
 			
 			sc.close();
-			
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
 		}
-
 		
-		Mesh theMesh = new Mesh(vetex, index);
-		
-		return theMesh;
+		return new Mesh(vetex, index);
 	}
 	
 

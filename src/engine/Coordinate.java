@@ -2,9 +2,9 @@ package engine;
 
 public class Coordinate {
 	
-	private double x;
-	private double y;
-	private double z;
+	protected double x;
+	protected double y;
+	protected double z;
 	
 	public Coordinate(double x, double y, double z) {
 		this.x = x;
@@ -46,6 +46,18 @@ public class Coordinate {
 	
 	public void addZ(double zAdd) {
 		z += zAdd;
+	}
+	
+	public void add(Coordinate other) {
+		x += other.x;
+		y += other.y;
+		z += other.z;
+	}
+	
+	public void multiply(double scaler) {
+		x *= scaler;
+		y *= scaler;
+		z *= scaler;
 	}
 	
 	//public void add(coordinate) {return new cord(x+x, y+y, z+z)}
