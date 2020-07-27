@@ -44,6 +44,6 @@ Objects can also be rendered with a texture from a PNG file. The textures are re
 
 ![Screen](./Screenshots/View10.png)
 
-Display of imported objects from .obj files. Models were made by me in Blender and obj file were edits to be in "Vertex indices" only format.
+Display of imported objects from .obj files. Besides the teapot, the Models were made by me in Blender and obj file were edits to be in "Vertex indices" only format.
 
 ![Screen](./Screenshots/View11.png)
