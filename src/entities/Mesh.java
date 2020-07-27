@@ -45,6 +45,27 @@ public class Mesh {
 		Mesh cone = MeshLoader.loadMesh("cone.txt");
 		cone.name = "Cone";
 		MESHES.put("Cone", cone);
+		
+		Mesh man = MeshLoader.loadMesh("ExportableHumanEdit.txt");
+		man.name = "Man";
+		MESHES.put("Man", man);
+		
+		Mesh bull = MeshLoader.loadMesh("ExportableBull.obj");
+		bull.name = "bull";
+		MESHES.put("bull", bull);
+		
+		Mesh elephant = MeshLoader.loadMesh("ExportableElephant.obj");
+		elephant.name = "elephant";
+		MESHES.put("elephant", elephant);
+		
+		Mesh fox = MeshLoader.loadMesh("ExportableFox.obj");
+		fox.name = "fox";
+		MESHES.put("fox", fox);
+		
+		Mesh horse = MeshLoader.loadMesh("ExportableHorse.obj");
+		horse.name = "horse";
+		MESHES.put("horse", man);
+		
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

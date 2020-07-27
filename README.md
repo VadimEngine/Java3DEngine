@@ -43,3 +43,7 @@ Users can add objects into the environment by selecting from the Mesh JList and 
 Objects can also be rendered with a texture from a PNG file. The textures are rendered using affine texture mapping. The texture is defective at certain angles due to perspective. Perspective correction is needed to improve the texture rendering. 
 
 ![Screen](./Screenshots/View10.png)
+
+Display of imported objects from .obj files. Models were made by me in Blender and obj file were edits to be in "Vertex indices" only format.
+
+![Screen](./Screenshots/View11.png)
